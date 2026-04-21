@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCB Wealth Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --blue: #0473EA;
+  --blue-dark: #0259B8;
+  --blue-light: #E8F1FE;
+  --blue-lighter: #F4F8FE;
+  --green: #38D200;
+  --green-dark: #2AA800;
+  --green-light: #E8FBE0;
+  --navy: #0F2E5F;
+  --ink: #0B1220;
+  --ink-soft: #364152;
+  --muted: #6B7684;
+  --border: #E4E8EE;
+  --border-soft: #EEF1F5;
+  --surface: #F7F8FA;
+  --amber: #F59E0B;
+  --amber-light: #FEF3C7;
+  --red: #DC2626;
+  --red-light: #FEE2E2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+html, body { height: 100%; }
+body {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select { font-family: inherit; }
+.font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: 'tnum'; }
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 248px; flex-shrink: 0; background: #fff;
+  border-right: 1px solid var(--border);
+  height: 100vh; position: sticky; top: 0;
+  display: flex; flex-direction: column;
+}
+.main { flex: 1; min-width: 0; }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 32px;
+}
+
+/* Sidebar */
+.logo { display: flex; align-items: center; gap: 10px; padding: 20px 20px 24px; }
+.logo-mark { position: relative; width: 34px; height: 34px; border-radius: 8px; background: linear-gradient(135deg, var(--blue), var(--green)); display: flex; align-items: center; justify-content: center; }
+.logo-mark-inner { width: 22px; height: 22px; background: #fff; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--blue); letter-spacing: -0.02em; }
+.logo-text-main { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+.logo-text-sub { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
+
+.nav { flex: 1; overflow-y: auto; padding: 0 12px 16px; }
+.nav-section { padding: 20px 12px 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); }
+.nav-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--ink-soft); text-align: left; transition: all 0.15s; margin-bottom: 2px; }
+.nav-item:hover { background: var(--surface); }
+.nav-item.active { background: var(--blue-light); color: var(--blue-dark); font-weight: 600; }
+.nav-item.active svg { stroke-width: 2.4; }
+.nav-badge { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 999px; background: var(--blue); color: #fff; }
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.sidebar-footer { padding: 12px; border-top: 1px solid var(--border); }
+.user-chip { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.user-chip:hover { background: var(--surface); }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-light); color: var(--blue-dark); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.user-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.user-role { font-size: 10px; color: var(--muted); }
+
+/* Top bar */
+.search-wrap { flex: 1; max-width: 576px; position: relative; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); width: 16px; height: 16px; }
+.search-input { width: 100%; padding: 8px 12px 8px 36px; font-size: 13px; border-radius: 8px; background: #fff; border: 1px solid var(--border); outline: none; color: var(--ink); }
+.search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.top-actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn { padding: 8px; border-radius: 8px; color: var(--ink-soft); position: relative; }
+.icon-btn:hover { background: var(--surface); }
+.icon-btn svg { width: 17px; height: 17px; display: block; }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+.divider-v { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+.top-user { display: flex; align-items: center; gap: 8px; }
+.top-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--green)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+.top-user-info { line-height: 1.2; }
+.top-user-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.top-user-sub { font-size: 10px; color: var(--muted); }
+
+/* Page */
+.page { padding: 28px 32px; }
+.page-narrow { padding: 28px 32px; max-width: 1040px; margin: 0 auto; }
+.crumbs { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--ink); text-decoration: underline; }
+.crumbs .current { color: var(--ink); }
+.crumbs svg { width: 12px; height: 12px; }
+
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+h1.page-title { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-top: 4px; }
+h1.page-title-lg { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; line-height: 1.15; }
+.page-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+/* Cards */
+.card { background: #fff; border: 1px solid var(--border); border-radius: 12px; }
+.card-pad-sm { padding: 16px; }
+.card-pad { padding: 20px; }
+.card-pad-lg { padding: 24px; }
+.card-pad-xl { padding: 32px; }
+
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.col-span-2 { grid-column: span 2; }
+.stack { display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; }
+.gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-5 { gap: 20px; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-5 { margin-top: 20px; } .mt-6 { margin-top: 24px; }
+.mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-3 { margin-bottom: 12px; } .mb-4 { margin-bottom: 16px; } .mb-5 { margin-bottom: 20px; } .mb-6 { margin-bottom: 24px; }
+.flex-1 { flex: 1; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Typography */
+.t-xs { font-size: 11px; }
+.t-sm { font-size: 12px; }
+.t-md { font-size: 13px; }
+.t-base { font-size: 14px; }
+.t-lg { font-size: 16px; }
+.t-xl { font-size: 18px; }
+.t-2xl { font-size: 20px; }
+.t-3xl { font-size: 24px; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+.c-ink { color: var(--ink); }
+.c-ink-soft { color: var(--ink-soft); }
+.c-muted { color: var(--muted); }
+.c-blue { color: var(--blue); }
+.c-blue-dark { color: var(--blue-dark); }
+.c-green-dark { color: var(--green-dark); }
+.tracking-tight { letter-spacing: -0.01em; }
+.tracking-tighter { letter-spacing: -0.02em; }
+
+/* Badge */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 500; border: 1px solid transparent; }
+.badge svg { width: 11px; height: 11px; }
+.badge-default { background: var(--surface); color: var(--ink-soft); border-color: var(--border); }
+.badge-blue { background: var(--blue-light); color: var(--blue-dark); border-color: #CFE1FC; }
+.badge-green { background: var(--green-light); color: var(--green-dark); border-color: #C7F1B6; }
+.badge-amber { background: var(--amber-light); color: #92400E; border-color: #FDE68A; }
+.badge-red { background: var(--red-light); color: #991B1B; border-color: #FECACA; }
+.badge-ink { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* Button */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500; border-radius: 8px; transition: all 0.15s; white-space: nowrap; padding: 8px 16px; font-size: 13px; height: 40px; border: 1px solid transparent; }
+.btn:hover:not(:disabled) { filter: brightness(0.95); }
+.btn:active:not(:disabled) { filter: brightness(0.9); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn svg { width: 16px; height: 16px; stroke-width: 2.2; }
+.btn-sm { padding: 6px 12px; font-size: 12px; height: 32px; }
+.btn-sm svg { width: 14px; height: 14px; }
+.btn-lg { padding: 10px 20px; font-size: 13px; height: 44px; }
+.btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.btn-secondary { background: #fff; color: var(--ink); border-color: var(--border); }
+.btn-ghost { background: transparent; color: var(--ink-soft); }
+.btn-ghost:hover:not(:disabled) { background: var(--surface); filter: none; }
+.btn-success { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn-danger { background: #fff; color: var(--red); border-color: rgba(220,38,38,0.2); }
+.btn-full { width: 100%; }
+
+/* Input */
+.field { display: block; }
+.field-label { display: block; font-size: 11px; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+.field-hint { display: block; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.field-error { display: block; font-size: 11px; color: var(--red); margin-top: 4px; }
+.input-wrap { display: flex; align-items: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 2px rgba(15,23,42,0.03); transition: all 0.15s; }
+.input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.input-prefix { padding-left: 12px; font-size: 12px; font-weight: 500; color: var(--muted); }
+.input { width: 100%; padding: 10px 12px; font-size: 13px; background: transparent; border: none; outline: none; color: var(--ink); }
+.input::placeholder { color: #94A3B8; }
+
+.select-wrap { position: relative; }
+.select { width: 100%; appearance: none; -webkit-appearance: none; padding: 10px 36px 10px 12px; font-size: 13px; background: #fff; border: 1px solid var(--border); border-radius: 8px; outline: none; color: var(--ink); box-shadow: 0 1px 2px rgba(15,23,42,0.03); cursor: pointer; }
+.select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.select-chevron { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; width: 16px; height: 16px; }
+
+/* Table */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table thead tr { background: var(--surface); }
+.table th { text-align: left; padding: 10px 0; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.table th:first-child, .table td:first-child { padding-left: 20px; }
+.table th:last-child, .table td:last-child { padding-right: 20px; }
+.table tbody tr { border-top: 1px solid var(--border-soft); cursor: pointer; transition: background 0.1s; }
+.table tbody tr:hover { background: rgba(247,248,250,0.6); }
+.table td { padding: 12px 0; }
+.table .numeric { text-align: right; }
+
+/* Stats */
+.stat-card { padding: 20px; }
+.stat-label { font-size: 11px; font-weight: 500; color: var(--muted); }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-top: 8px; }
+.stat-value-sm { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; margin-top: 4px; }
+.stat-sub { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+.stat-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.stat-icon-blue { background: var(--blue-light); color: var(--blue-dark); }
+.stat-icon-green { background: var(--green-light); color: var(--green-dark); }
+.stat-icon-amber { background: var(--amber-light); color: #92400E; }
+.stat-icon-default { background: var(--surface); color: var(--ink-soft); }
+.stat-icon svg { width: 18px; height: 18px; }
+
+/* Status live pill */
+.status-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--green-light); border: 1px solid #C7F1B6; font-size: 12px; font-weight: 600; color: var(--green-dark); }
+.pulse-dot { position: relative; display: inline-flex; width: 8px; height: 8px; }
+.pulse-dot::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--green); opacity: 0.6; animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }
+.pulse-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--green); }
+@keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+
+/* Greeting gradient */
+.gradient-text { background: linear-gradient(120deg, var(--blue), var(--green)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Fund row */
+.fund-row { padding: 16px; border-radius: 8px; display: flex; align-items: center; gap: 16px; border: 1px solid var(--border-soft); transition: background 0.15s; }
+.fund-row:hover { background: var(--surface); }
+.fund-icon { width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, var(--blue), var(--green)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fund-icon svg { width: 16px; height: 16px; color: #fff; stroke-width: 2.4; }
+
+/* Progress bar */
+.progress { height: 6px; border-radius: 3px; overflow: hidden; background: var(--border-soft); }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+/* Quick action card */
+.qa-card { text-align: left; padding: 20px; border-radius: 12px; background: #fff; border: 1px solid var(--border); transition: all 0.2s; cursor: pointer; }
+.qa-card:hover { box-shadow: 0 8px 24px rgba(15,23,42,0.08); transform: translateY(-1px); }
+.qa-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+.qa-icon svg { width: 18px; height: 18px; stroke-width: 2.2; }
+.qa-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.qa-desc { font-size: 11px; line-height: 1.4; color: var(--muted); }
+.qa-cta { display: flex; align-items: center; gap: 4px; margin-top: 16px; font-size: 11px; font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+.qa-card:hover .qa-cta { opacity: 1; }
+.qa-cta svg { width: 12px; height: 12px; }
+
+/* Wizard step indicator */
+.steps { display: flex; align-items: center; gap: 8px; }
+.step-item { flex: 1; display: flex; align-items: center; gap: 8px; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 1px solid var(--border); background: #fff; color: var(--muted); transition: all 0.2s; flex-shrink: 0; }
+.step-dot.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.step-dot.done { background: var(--green); color: #fff; border-color: var(--green); }
+.step-dot svg { width: 13px; height: 13px; stroke-width: 3; }
+.step-label { font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.step-label.active { color: var(--ink); }
+.step-label.done { color: var(--ink-soft); }
+.step-line { flex: 1; height: 1px; background: var(--border); }
+.step-line.done { background: var(--green); }
+
+/* Selectable row */
+.select-row { width: 100%; text-align: left; padding: 16px; border-radius: 8px; display: flex; align-items: center; gap: 16px; background: #fff; border: 2px solid var(--border); transition: all 0.15s; cursor: pointer; }
+.select-row:hover { border-color: #CFE1FC; }
+.select-row.selected { border-color: var(--blue); background: var(--blue-lighter); }
+.select-row-avatar { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.select-row-avatar.blue { background: var(--blue-light); color: var(--blue-dark); }
+.select-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.select-row.selected .select-check { background: var(--blue); border-color: var(--blue); }
+.select-check svg { width: 12px; height: 12px; color: #fff; stroke-width: 3; display: none; }
+.select-row.selected .select-check svg { display: block; }
+
+/* Info banner */
+.info-banner { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 8px; font-size: 12px; }
+.info-banner svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 2px; }
+.info-banner.blue { background: var(--blue-lighter); border: 1px solid var(--blue-light); color: var(--ink-soft); }
+.info-banner.blue svg { color: var(--blue-dark); }
+.info-banner.amber { background: var(--amber-light); border: 1px solid #FDE68A; color: #78350F; }
+.info-banner.amber svg { color: #92400E; }
+.info-banner.red { background: var(--red-light); border: 1px solid #FECACA; color: #991B1B; }
+.info-banner.red svg { color: var(--red); }
+
+/* Review rows */
+.review-box { border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.review-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border-soft); }
+.review-row:first-child { border-top: none; }
+.review-row:nth-child(even) { background: var(--surface); }
+.review-key { font-size: 11px; font-weight: 600; color: var(--muted); }
+.review-val { font-size: 13px; font-weight: 600; color: var(--ink); text-align: right; }
+.review-sub { font-size: 11px; color: var(--muted); text-align: right; margin-top: 2px; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; }
+.timeline-item { display: flex; gap: 16px; }
+.timeline-spine { display: flex; flex-direction: column; align-items: center; }
+.timeline-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.timeline-dot.done { background: var(--green); border-color: var(--green); }
+.timeline-dot.active { background: var(--blue); border-color: var(--blue); }
+.timeline-dot.failed { background: var(--red); border-color: var(--red); }
+.timeline-dot svg { width: 13px; height: 13px; color: #fff; stroke-width: 3; }
+.timeline-dot.pending svg { color: var(--muted); width: 6px; height: 6px; stroke-width: 2; }
+.timeline-line { flex: 1; width: 1px; background: var(--border); min-height: 32px; }
+.timeline-line.done { background: var(--green); }
+.timeline-content { flex: 1; padding-bottom: 24px; }
+.timeline-title { font-size: 13px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+.timeline-title.pending { color: var(--muted); }
+.timeline-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.timeline-ts { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* Toggle */
+.toggle { width: 36px; height: 20px; border-radius: 999px; background: var(--border); position: relative; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+.toggle.on { background: var(--blue); }
+.toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: left 0.15s; }
+.toggle.on .toggle-thumb { left: 18px; }
+
+/* Avatar */
+.avatar { border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+.avatar-sm { width: 32px; height: 32px; font-size: 11px; }
+.avatar-md { width: 40px; height: 40px; font-size: 12px; }
+.avatar-lg { width: 56px; height: 56px; font-size: 16px; border-radius: 12px; }
+.avatar-blue { background: var(--blue-light); color: var(--blue-dark); }
+.avatar-gradient { background: linear-gradient(135deg, var(--blue), var(--green)); color: #fff; }
+
+/* Success icon */
+.success-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.success-circle svg { width: 32px; height: 32px; color: var(--green-dark); stroke-width: 2.2; }
+.blue-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--blue-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.blue-circle svg { width: 32px; height: 32px; color: var(--blue); stroke-width: 2.2; }
+
+/* Loading spinner */
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Screens */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* Misc */
+.hover-bg:hover { background: rgba(247,248,250,0.6); }
+.sep { height: 1px; background: var(--border-soft); margin: 16px 0; }
+.align-start { align-items: flex-start; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.text-link { color: var(--blue); font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.text-link:hover { text-decoration: underline; }
+.text-link svg { width: 12px; height: 12px; }
+
+.breakdown-sm { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Pipeline progress items */
+.pipeline-item { margin-bottom: 14px; }
+.pipeline-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.pipeline-label { font-size: 11px; font-weight: 600; color: var(--ink); }
+.pipeline-time { font-size: 10px; font-family: 'JetBrains Mono', monospace; padding: 2px 6px; border-radius: 4px; background: var(--surface); color: var(--muted); }
+.pipeline-count { font-size: 10px; color: var(--muted); }
+
+/* Page max width container */
+.container-5xl { max-width: 1040px; margin: 0 auto; }
+
+/* Placeholder empty state */
+.empty-state { padding: 64px 32px; text-align: center; }
+.empty-icon { width: 56px; height: 56px; border-radius: 12px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--blue-dark); }
+.empty-icon svg { width: 24px; height: 24px; }
+
+/* Small helpers */
+.min-w-0 { min-width: 0; }
+.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-red { color: var(--red); }
+
+/* Reconciliation table */
+.recon-scroll { overflow-x: auto; overflow-y: visible; }
+.recon-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 2600px; }
+.recon-table .recon-groups th { padding: 10px 12px 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-dark); text-align: left; background: var(--surface); border-bottom: none; }
+.recon-table .recon-groups th.recon-group { border-left: 1px solid var(--border-soft); }
+.recon-table .recon-groups th.recon-group-empty { background: var(--surface); }
+.recon-table .recon-head th { padding: 6px 12px 12px; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-align: left; background: var(--surface); white-space: nowrap; border-bottom: 1px solid var(--border); }
+.recon-table .recon-head th.numeric { text-align: right; }
+.recon-table .recon-head th.center { text-align: center; }
+.recon-table tbody tr { border-top: 1px solid var(--border-soft); }
+.recon-table tbody tr:hover { background: rgba(247,248,250,0.5); }
+.recon-table td { padding: 12px; white-space: nowrap; }
+.recon-table td.numeric { text-align: right; }
+.recon-table td.center { text-align: center; }
+.recon-match-yes, .recon-match-no { width: 22px; height: 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; }
+.recon-match-yes { background: var(--green-light); color: var(--green-dark); }
+.recon-match-no { background: var(--red-light); color: var(--red); }
+.recon-sync-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--green-dark); }
+.recon-sync-pill .dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-mark-inner">SC</div>
+      </div>
+      <div>
+        <div class="logo-text-main">Standard Chartered</div>
+        <div class="logo-text-sub">WEALTH ADMIN</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-section">OVERVIEW</div>
+      <button class="nav-item" data-nav="dashboard"><i data-lucide="layout-dashboard"></i><span class="flex-1">Dashboard</span></button>
+
+      <div class="nav-section">CLIENT MANAGEMENT</div>
+      <button class="nav-item" data-nav="customers"><i data-lucide="users"></i><span class="flex-1">Customers</span></button>
+
+      <div class="nav-section">INVESTMENT MANAGEMENT</div>
+      <button class="nav-item" data-nav="buy-orders"><i data-lucide="shopping-cart"></i><span class="flex-1">Buy Orders</span><span class="nav-badge">3</span></button>
+      <button class="nav-item" data-nav="sell-orders"><i data-lucide="arrow-down-to-line"></i><span class="flex-1">Sell Orders</span></button>
+      <button class="nav-item" data-nav="recurring"><i data-lucide="refresh-cw"></i><span class="flex-1">Recurring</span></button>
+
+      <div class="nav-section">FUND OPERATIONS</div>
+      <button class="nav-item" data-nav="funds"><i data-lucide="trending-up"></i><span class="flex-1">Funds</span></button>
+      <button class="nav-item" data-nav="reconciliation"><i data-lucide="activity"></i><span class="flex-1">Reconciliation</span></button>
+      <button class="nav-item" data-nav="interest"><i data-lucide="banknote"></i><span class="flex-1">Interest</span></button>
+
+      <div class="nav-section">GOVERNANCE</div>
+      <button class="nav-item" data-nav="reports"><i data-lucide="file-bar-chart"></i><span class="flex-1">Reports</span></button>
+      <button class="nav-item" data-nav="audit"><i data-lucide="shield"></i><span class="flex-1">Audit Log</span></button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">AM</div>
+        <div class="flex-1 min-w-0">
+          <div class="user-name truncate">Amina Mukasa</div>
+          <div class="user-role truncate">Wealth Ops · L2</div>
+        </div>
+        <i data-lucide="chevrons-up-down" style="width:14px;height:14px;color:var(--muted);"></i>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="search-wrap">
+        <i data-lucide="search" class="search-icon"></i>
+        <input class="search-input" placeholder="Search customers, orders, RelIds…" />
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn"><i data-lucide="help-circle"></i></button>
+        <button class="icon-btn">
+          <i data-lucide="bell"></i>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="divider-v"></div>
+        <div class="top-user">
+          <div class="top-user-avatar">AM</div>
+          <div class="top-user-info">
+            <div class="top-user-name">Amina Mukasa</div>
+            <div class="top-user-sub">SCB Kenya · Wealth Ops</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content area - screens rendered dynamically -->
+    <main id="content"></main>
+  </div>
+</div>
+
+<script>
+// ========== DATA ==========
+const CUSTOMERS = [
+  { id: "CU-1001", relId: "SC90112234", name: "Kibo Coffee Exporters Ltd", type: "SME", status: "Active", aum: "KES 18,420,500", holdings: 1, created: "12 Mar 2026", email: "finance@kibocoffee.co.ke", phone: "+254 722 120 411", address: "Enterprise Road, Industrial Area, Nairobi", bankAccounts: [{ no: "0100-2214-88-01", type: "Current", currency: "KES", balance: "6,844,902", primary: true }, { no: "0100-2214-88-02", type: "Call", currency: "KES", balance: "2,100,000" }] },
+  { id: "CU-1002", relId: "SC90119481", name: "Rift Valley Logistics Group", type: "SME", status: "Active", aum: "KES 44,610,800", holdings: 1, created: "04 Feb 2026", email: "ops@riftvalleylog.co.ke", phone: "+254 701 882 140", address: "Nakuru-Eldoret Highway, Nakuru", bankAccounts: [{ no: "0100-9981-14-02", type: "Current", currency: "KES", balance: "15,280,000", primary: true }] },
+  { id: "CU-1003", relId: "SC90124102", name: "Savannah Agri-Produce Kenya", type: "SME", status: "Active", aum: "KES 7,940,250", holdings: 1, created: "27 Jan 2026", email: "treasury@savannahagri.co.ke", phone: "+254 758 004 212", address: "Meru-Nanyuki Road, Meru", bankAccounts: [{ no: "0100-4420-02-10", type: "Current", currency: "KES", balance: "3,294,000", primary: true }] },
+  { id: "CU-1004", relId: "SC90131442", name: "Pearl Textiles EA Ltd", type: "SME", status: "Pending KYC", aum: "—", holdings: 0, created: "18 Apr 2026", email: "admin@pearltextiles.co.ke", phone: "+254 772 904 001", address: "Athi River EPZ, Machakos", bankAccounts: [{ no: "0100-7782-30-01", type: "Current", currency: "KES", balance: "821,000", primary: true }] },
+  { id: "CU-1005", relId: "SC90142217", name: "Coastline Freight Services Ltd", type: "SME", status: "Active", aum: "KES 3,562,000", holdings: 1, created: "09 Feb 2026", email: "finance@coastlinefreight.co.ke", phone: "+254 788 112 310", address: "Likoni Road, Mombasa", bankAccounts: [{ no: "0100-3310-45-02", type: "Current", currency: "KES", balance: "1,774,900", primary: true }] },
+];
+
+const FUNDS = [
+  { code: "SAN-SHIL-KES", name: "Sanlam Shilingi Money Market", currency: "KES", yield: "12.45%", risk: "Low", aum: "KES 48.2 Bn", nav: "1.0423" },
+];
+
+const ORDERS = [
+  { id: "BUY-20260421-0012", type: "Buy", customer: "Kibo Coffee Exporters Ltd", fund: "Sanlam Shilingi MM", amount: "KES 1,850,000", status: "Settled", submitted: "21 Apr 2026, 06:42", units: "1,775.04" },
+  { id: "BUY-20260421-0011", type: "Buy", customer: "Rift Valley Logistics Group", fund: "Sanlam Shilingi MM", amount: "KES 4,500,000", status: "Executed", submitted: "21 Apr 2026, 06:40", units: "4,317.41" },
+  { id: "SELL-20260421-0004", type: "Sell", customer: "Savannah Agri-Produce Kenya", fund: "Sanlam Shilingi MM", amount: "KES 680,000", status: "Awaiting Sanlam", submitted: "21 Apr 2026, 07:02", units: "652.40" },
+  { id: "BUY-20260420-0031", type: "Buy", customer: "Coastline Freight Services Ltd", fund: "Sanlam Shilingi MM", amount: "KES 920,000", status: "Settled", submitted: "20 Apr 2026, 06:55", units: "882.66" },
+  { id: "SELL-20260420-0009", type: "Sell", customer: "Kibo Coffee Exporters Ltd", fund: "Sanlam Shilingi MM", amount: "KES 460,000", status: "Settled", submitted: "20 Apr 2026, 07:11", units: "441.33" },
+  { id: "BUY-20260420-0027", type: "Buy", customer: "Rift Valley Logistics Group", fund: "Sanlam Shilingi MM", amount: "KES 7,400,000", status: "Failed", submitted: "20 Apr 2026, 06:48", units: "—" },
+];
+
+const RECURRING = [
+  { id: "REC-1001", customer: "Kibo Coffee Exporters Ltd", customerId: "CU-1001", fund: "Sanlam Shilingi MM", amount: "KES 250,000", frequency: "Monthly · 1st", nextRun: "01 May 2026", status: "Active", startedOn: "12 Mar 2026", lastStatus: "Success", lastRun: "01 Apr 2026", runs: 3, bankAcct: "0100-2214-88-01" },
+  { id: "REC-1002", customer: "Rift Valley Logistics Group", customerId: "CU-1002", fund: "Sanlam Shilingi MM", amount: "KES 1,500,000", frequency: "Monthly · 15th", nextRun: "15 May 2026", status: "Active", startedOn: "15 Feb 2026", lastStatus: "Success", lastRun: "15 Apr 2026", runs: 3, bankAcct: "0100-9981-14-02" },
+  { id: "REC-1003", customer: "Savannah Agri-Produce Kenya", customerId: "CU-1003", fund: "Sanlam Shilingi MM", amount: "KES 180,000", frequency: "Monthly · 1st", nextRun: "01 May 2026 (retry)", status: "Failed", startedOn: "01 Feb 2026", lastStatus: "Insufficient funds", lastRun: "01 Apr 2026", runs: 2, bankAcct: "0100-4420-02-10" },
+  { id: "REC-1004", customer: "Coastline Freight Services Ltd", customerId: "CU-1005", fund: "Sanlam Shilingi MM", amount: "KES 75,000", frequency: "Weekly · Monday", nextRun: "28 Apr 2026", status: "Active", startedOn: "16 Feb 2026", lastStatus: "Success", lastRun: "21 Apr 2026", runs: 9, bankAcct: "0100-3310-45-02" },
+  { id: "REC-1005", customer: "Kibo Coffee Exporters Ltd", customerId: "CU-1001", fund: "Sanlam Shilingi MM", amount: "KES 500,000", frequency: "Monthly · 25th", nextRun: "25 Apr 2026", status: "Paused", startedOn: "25 Jan 2026", lastStatus: "Paused by ops", lastRun: "25 Mar 2026", runs: 2, bankAcct: "0100-2214-88-02" },
+  { id: "REC-1006", customer: "Rift Valley Logistics Group", customerId: "CU-1002", fund: "Sanlam Shilingi MM", amount: "KES 200,000", frequency: "Monthly · 1st", nextRun: "01 May 2026", status: "Active", startedOn: "01 Mar 2026", lastStatus: "Success", lastRun: "01 Apr 2026", runs: 2, bankAcct: "0100-9981-14-02" },
+];
+
+// Reconciliation daily rows — SC vs Sanlam for Sanlam Shilingi MM
+const RECON = [
+  { date: "23 Mar 2026", status: "Reconciled", dailyRate: "—", rateStatus: "—", totalInvested: "0", totalRedemption: "—", scEod: "0.00", sanlamEod: "0.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "—", sanlamGross: "—", grossDelta: "—", grossMatch: null, scNet: "—", sanlamNet: "—", netDelta: "—", netMatch: null, scCum: "0.00", sanlamCum: "0.00", cumDelta: "0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "24 Mar 2026", status: "Reconciled", dailyRate: "—", rateStatus: "—", totalInvested: "340,012", totalRedemption: "—", scEod: "0.00", sanlamEod: "0.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "—", sanlamGross: "—", grossDelta: "—", grossMatch: null, scNet: "—", sanlamNet: "—", netDelta: "—", netMatch: null, scCum: "0.00", sanlamCum: "0.00", cumDelta: "0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "25 Mar 2026", status: "Reconciled", dailyRate: "—", rateStatus: "—", totalInvested: "350,012", totalRedemption: "—", scEod: "200,000.00", sanlamEod: "200,000.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "—", sanlamGross: "—", grossDelta: "—", grossMatch: null, scNet: "—", sanlamNet: "—", netDelta: "—", netMatch: null, scCum: "0.00", sanlamCum: "0.00", cumDelta: "0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "26 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "350,012", totalRedemption: "—", scEod: "200,000.00", sanlamEod: "200,000.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "68.91", sanlamGross: "68.91", grossDelta: "+0.00", grossMatch: true, scNet: "58.58", sanlamNet: "58.58", netDelta: "-0.00", netMatch: true, scCum: "58.58", sanlamCum: "58.58", cumDelta: "-0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "27 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "545,008", totalRedemption: "10,000", scEod: "200,000.00", sanlamEod: "200,000.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "66.90", sanlamGross: "66.90", grossDelta: "+0.00", grossMatch: true, scNet: "56.87", sanlamNet: "56.87", netDelta: "-0.00", netMatch: true, scCum: "115.44", sanlamCum: "115.44", cumDelta: "-0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "28 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "545,008", totalRedemption: "10,000", scEod: "200,000.00", sanlamEod: "200,000.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "67.92", sanlamGross: "67.92", grossDelta: "-0.00", grossMatch: true, scNet: "57.74", sanlamNet: "57.74", netDelta: "+0.00", netMatch: true, scCum: "173.18", sanlamCum: "173.18", cumDelta: "-0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "29 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "545,008", totalRedemption: "10,000", scEod: "200,000.00", sanlamEod: "200,000.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "68.08", sanlamGross: "68.08", grossDelta: "-0.00", grossMatch: true, scNet: "57.87", sanlamNet: "57.87", netDelta: "+0.00", netMatch: true, scCum: "231.04", sanlamCum: "231.04", cumDelta: "-0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "30 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "605,007", totalRedemption: "10,000", scEod: "384,996.00", sanlamEod: "384,996.00", variance: "0.00", eodMatch: true, tolPct: "0.01", scGross: "67.67", sanlamGross: "67.67", grossDelta: "+0.00", grossMatch: true, scNet: "57.52", sanlamNet: "57.52", netDelta: "+0.00", netMatch: true, scCum: "288.56", sanlamCum: "288.56", cumDelta: "+0.00", cumMatch: true, monthEndInt: "—", sync: "Synced" },
+  { date: "31 Mar 2026", status: "Reconciled", dailyRate: "12.45%", rateStatus: "Published", totalInvested: "605,007", totalRedemption: "10,000", scEod: "385,383.07", sanlamEod: "385,397.50", variance: "-14.43", eodMatch: true, tolPct: "0.01", scGross: "132.86", sanlamGross: "132.86", grossDelta: "+0.00", grossMatch: true, scNet: "112.93", sanlamNet: "112.93", netDelta: "+0.00", netMatch: true, scCum: "401.50", sanlamCum: "401.50", cumDelta: "+0.00", cumMatch: true, monthEndInt: "Available · 112.93", sync: "Synced" },
+];
+
+// ========== APP STATE ==========
+const app = {
+  page: "dashboard",
+  pageData: {},
+  // Customer wizard
+  cw: { step: 0, relId: "", fetching: false, fetched: null, creating: false, created: false, selectedAccount: 0 },
+  // Buy wizard
+  bw: { step: 0, customer: null, fund: null, amount: "", bankAcct: 0, recurring: false, submitting: false, submitted: false },
+  // Sell wizard
+  sw: { step: 0, customer: null, mode: "partial", amount: "", submitting: false, submitted: false },
+};
+
+// ========== UTILS ==========
+const statusToneMap = { Settled: "green", Executed: "blue", "Awaiting Sanlam": "amber", Pending: "amber", "Pending KYC": "amber", Failed: "red", Active: "green", Rejected: "red", Submitted: "blue", "In Progress": "blue" };
+const tone = (s) => statusToneMap[s] || "default";
+const initials = (name) => name.split(" ").map(w => w[0]).slice(0, 2).join("");
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m]));
+const badge = (text, t = "default") => `<span class="badge badge-${t}">${esc(text)}</span>`;
+const crumbs = (items) => {
+  const parts = items.map((it, i) => i === items.length - 1 ? `<span class="current">${esc(it.label)}</span>` : `<a href="#" data-nav-link="${it.to}">${esc(it.label)}</a>`);
+  return `<div class="crumbs">${parts.join(' <i data-lucide="chevron-right"></i> ')}</div>`;
+};
+
+// ========== NAVIGATION ==========
+function navigate(page, data = {}) {
+  app.page = page;
+  app.pageData = data;
+  // Reset wizards when entering
+  if (page === "customer-new") app.cw = { step: 0, relId: "", fetching: false, fetched: null, creating: false, created: false, selectedAccount: 0 };
+  if (page === "buy-new") app.bw = { step: 0, customer: null, fund: null, amount: "", bankAcct: 0, recurring: false, submitting: false, submitted: false };
+  if (page === "sell-new") app.sw = { step: 0, customer: null, mode: "partial", amount: "", submitting: false, submitted: false };
+  render();
+  window.scrollTo(0, 0);
+}
+
+function render() {
+  // Sidebar active state
+  document.querySelectorAll("[data-nav]").forEach(el => {
+    el.classList.toggle("active", app.page.startsWith(el.dataset.nav) && el.dataset.nav !== "dashboard" || (app.page === "dashboard" && el.dataset.nav === "dashboard"));
+  });
+  // Map sub-pages to their sidebar parent
+  const parentMap = { "customer-new": "customers", "customer-detail": "customers", "buy-new": "buy-orders", "buy-detail": "buy-orders", "sell-new": "sell-orders", "sell-detail": "sell-orders" };
+  if (parentMap[app.page]) {
+    document.querySelectorAll("[data-nav]").forEach(el => el.classList.remove("active"));
+    document.querySelector(`[data-nav="${parentMap[app.page]}"]`)?.classList.add("active");
+  } else if (app.page !== "dashboard") {
+    document.querySelectorAll("[data-nav]").forEach(el => el.classList.remove("active"));
+    document.querySelector(`[data-nav="${app.page}"]`)?.classList.add("active");
+  }
+
+  const content = document.getElementById("content");
+  const renderers = {
+    "dashboard": renderDashboard, "customers": renderCustomersList, "customer-new": renderCustomerWizard, "customer-detail": renderCustomerDetail,
+    "buy-orders": () => renderOrdersList("Buy"), "buy-new": renderBuyWizard, "buy-detail": () => renderOrderDetail("Buy"),
+    "sell-orders": () => renderOrdersList("Sell"), "sell-new": renderSellWizard, "sell-detail": () => renderOrderDetail("Sell"),
+    "recurring": renderRecurring,
+    "funds": () => renderPlaceholder("Funds", "trending-up", "Fund catalogue configuration — NAVs, yields, cut-offs, and Sanlam mappings."),
+    "reconciliation": renderRecon,
+    "interest": () => renderPlaceholder("Interest", "banknote", "Daily accruals and month-end distribution controls (with maker-checker)."),
+    "reports": () => renderPlaceholder("Reports", "file-bar-chart", "Buys, sells, recurring, trailer fees, EOD balances. Filters and export."),
+    "audit": () => renderPlaceholder("Audit Log", "shield", "Immutable record of every admin action, API call, and state transition."),
+  };
+  content.innerHTML = (renderers[app.page] || renderDashboard)();
+  lucide.createIcons();
+  attachHandlers();
+}
+
+// ========== DASHBOARD ==========
+function renderDashboard() {
+  const stats = [
+    { label: "Total Customers", value: "142", delta: "+12 this month", icon: "users", tone: "blue" },
+    { label: "Assets Under Management", value: "KES 106.4M", delta: "+4.8% MoM", icon: "briefcase", tone: "green" },
+    { label: "Pending Orders", value: "7", delta: "3 Buy · 4 Sell", icon: "clock", tone: "amber" },
+    { label: "Today's Volume", value: "KES 8.1M", delta: "12 transactions", icon: "activity", tone: "default" },
+  ];
+  const pipeline = [
+    { label: "Buy cut-off", time: "07:00", pct: 82, count: "9 orders · KES 6.8M", color: "var(--blue)" },
+    { label: "Sell cut-off", time: "07:15", pct: 35, count: "4 orders · KES 1.3M", color: "var(--green)" },
+    { label: "Sanlam confirm", time: "14:00", pct: 0, count: "awaiting", color: "var(--amber)" },
+  ];
+  const quickActions = [
+    { icon: "user-plus", label: "Onboard Customer", desc: "Fetch from SCB CIF & create account", action: "customer-new", accent: "var(--blue)" },
+    { icon: "shopping-cart", label: "New Buy Order", desc: "Subscribe a client into a fund", action: "buy-new", accent: "var(--green)" },
+    { icon: "arrow-down-to-line", label: "New Sell Order", desc: "Redeem from a client holding", action: "sell-new", accent: "var(--blue-dark)" },
+    { icon: "refresh-cw", label: "Set Recurring", desc: "Monthly auto-invest schedule", action: "recurring", accent: "var(--amber)" },
+  ];
+
+  return `
+    <div class="page stack gap-5">
+      <div class="row justify-between align-start">
+        <div>
+          <h1 class="page-title-lg">Good afternoon, <span class="gradient-text">Amina</span></h1>
+          <p class="page-desc">Here's what's happening across the platform today.</p>
+        </div>
+        <div class="status-pill"><span class="pulse-dot"></span>All systems operational</div>
+      </div>
+
+      <div class="grid-4">
+        ${stats.map(s => `
+          <div class="card stat-card">
+            <div class="row justify-between align-start">
+              <div>
+                <div class="stat-label">${s.label}</div>
+                <div class="stat-value">${s.value}</div>
+                <div class="stat-sub">${s.delta}</div>
+              </div>
+              <div class="stat-icon stat-icon-${s.tone}"><i data-lucide="${s.icon}"></i></div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="grid-3">
+        <div class="card card-pad col-span-2">
+          <div class="row justify-between mb-4">
+            <div class="row gap-2"><i data-lucide="trending-up" style="width:16px;height:16px;"></i><h3 class="t-md fw-700">Available Funds</h3></div>
+            <button class="text-link" data-nav-link="funds">View all <i data-lucide="arrow-right"></i></button>
+          </div>
+          <div class="stack gap-2">
+            ${FUNDS.map(f => `
+              <div class="fund-row">
+                <div class="fund-icon"><i data-lucide="sparkles"></i></div>
+                <div class="flex-1 min-w-0">
+                  <div class="row gap-2">
+                    <div class="t-md fw-600 c-ink truncate">${f.name}</div>
+                    ${badge(f.risk, "blue")}
+                  </div>
+                  <div class="t-xs c-muted mt-1">${f.code} · AUM ${f.aum} · NAV ${f.nav}</div>
+                </div>
+                <div class="text-right">
+                  <div class="t-xl fw-700 c-green-dark tracking-tight">${f.yield}</div>
+                  <div class="t-xs c-muted">indicative yield</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <div class="row gap-2 mb-4"><i data-lucide="activity" style="width:16px;height:16px;"></i><h3 class="t-md fw-700">Today's Pipeline</h3></div>
+          <div>
+            ${pipeline.map(p => `
+              <div class="pipeline-item">
+                <div class="pipeline-row">
+                  <div class="row gap-2">
+                    <span class="pipeline-label">${p.label}</span>
+                    <span class="pipeline-time">${p.time}</span>
+                  </div>
+                  <span class="pipeline-count">${p.count}</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:${p.pct}%; background:${p.color};"></div></div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="t-xs fw-600 c-muted mb-3" style="letter-spacing:0.12em;">QUICK ACTIONS</div>
+        <div class="grid-4">
+          ${quickActions.map(q => `
+            <button class="qa-card" data-nav-link="${q.action}">
+              <div class="qa-icon" style="background:${q.accent}18; color:${q.accent};"><i data-lucide="${q.icon}"></i></div>
+              <div class="qa-title">${q.label}</div>
+              <div class="qa-desc">${q.desc}</div>
+              <div class="qa-cta" style="color:${q.accent};">Open <i data-lucide="arrow-right"></i></div>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="card" style="overflow:hidden;">
+        <div class="row justify-between" style="padding:20px 20px 16px;">
+          <div>
+            <h3 class="t-md fw-700 c-ink">Recent Orders</h3>
+            <p class="t-xs c-muted">Across all customers · last 48 hours</p>
+          </div>
+          <button class="text-link" data-nav-link="buy-orders">View all <i data-lucide="arrow-right"></i></button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Order</th><th>Customer</th><th>Fund</th><th class="numeric">Amount</th><th>Status</th><th class="numeric">Submitted</th></tr></thead>
+          <tbody>
+            ${ORDERS.slice(0, 5).map(o => `
+              <tr data-order="${o.id}" data-order-type="${o.type}">
+                <td class="font-mono t-xs c-ink-soft">${o.id}</td>
+                <td class="c-ink">${o.customer}</td>
+                <td class="c-ink-soft">${o.fund}</td>
+                <td class="numeric fw-600 c-ink">${o.amount}</td>
+                <td>${badge(o.status, tone(o.status))}</td>
+                <td class="numeric t-xs c-muted">${o.submitted}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ========== CUSTOMERS LIST ==========
+function renderCustomersList() {
+  return `
+    <div class="page stack gap-5">
+      <div class="page-header">
+        <div>
+          ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Customers"}])}
+          <h1 class="page-title">Customers</h1>
+          <p class="page-desc">Manage SME clients invested through the SCB Wealth platform.</p>
+        </div>
+        <button class="btn btn-primary" data-nav-link="customer-new"><i data-lucide="user-plus"></i>Onboard Customer</button>
+      </div>
+
+      <div class="card">
+        <div class="row gap-3" style="padding:16px; border-bottom:1px solid var(--border-soft);">
+          <div class="flex-1" style="position:relative;">
+            <i data-lucide="search" class="search-icon"></i>
+            <input id="cust-search" class="search-input" placeholder="Search by name, Customer ID, or RelId" />
+          </div>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="filter"></i>Filters</button>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>Export</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Customer</th><th>RelId</th><th>Status</th><th class="numeric">AUM</th><th class="numeric">Holdings</th><th class="numeric">Onboarded</th><th></th></tr></thead>
+          <tbody id="cust-tbody">${renderCustomerRows(CUSTOMERS)}</tbody>
+        </table>
+        <div class="row justify-between" style="padding:16px; border-top:1px solid var(--border-soft);">
+          <div class="t-xs c-muted">Showing ${CUSTOMERS.length} of ${CUSTOMERS.length} customers</div>
+          <div class="row gap-1">
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevron-left"></i>Prev</button>
+            <button class="btn btn-ghost btn-sm">Next<i data-lucide="chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCustomerRows(list) {
+  return list.map(c => `
+    <tr data-customer="${c.id}">
+      <td>
+        <div class="row gap-3">
+          <div class="avatar avatar-sm avatar-blue">${initials(c.name)}</div>
+          <div>
+            <div class="fw-600 c-ink">${c.name}</div>
+            <div class="t-xs c-muted">${c.id} · ${c.type}</div>
+          </div>
+        </div>
+      </td>
+      <td class="font-mono t-sm c-ink-soft">${c.relId}</td>
+      <td>${badge(c.status, tone(c.status))}</td>
+      <td class="numeric fw-600 c-ink">${c.aum}</td>
+      <td class="numeric c-ink-soft">${c.holdings}</td>
+      <td class="numeric t-sm c-muted">${c.created}</td>
+      <td class="numeric"><i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--muted);"></i></td>
+    </tr>
+  `).join("");
+}
+
+// ========== CUSTOMER ONBOARDING WIZARD ==========
+function renderStepHeader(steps, current) {
+  return `
+    <div class="steps">
+      ${steps.map((s, i) => {
+        const done = i < current, active = i === current;
+        return `
+          <div class="step-item">
+            <div class="row gap-2" style="flex-shrink:0;">
+              <div class="step-dot ${done ? "done" : active ? "active" : ""}">${done ? '<i data-lucide="check"></i>' : (i + 1)}</div>
+              <div class="step-label ${done ? "done" : active ? "active" : ""}">${s}</div>
+            </div>
+            ${i < steps.length - 1 ? `<div class="step-line ${done ? "done" : ""}"></div>` : ""}
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderCustomerWizard() {
+  const w = app.cw;
+  const steps = ["Fetch from SCB", "Review & Enrich", "Bank Account", "Create"];
+
+  let body = "";
+  if (w.step === 0) {
+    body = `
+      <div class="card card-pad-xl">
+        <div style="max-width:480px; margin:0 auto; text-align:center;">
+          <div style="width:56px;height:56px;border-radius:12px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i data-lucide="building-2" style="width:24px;height:24px;color:var(--blue-dark);"></i></div>
+          <h2 class="t-lg fw-700 c-ink">Pull customer from SCB core</h2>
+          <p class="t-md c-muted mt-1 mb-5">Enter the customer's Relationship ID (RelId). We'll retrieve KYC, entity, and bank details from the SCB CIF.</p>
+          <div class="stack gap-4" style="text-align:left;">
+            <label class="field">
+              <span class="field-label">Relationship ID (RelId)</span>
+              <div class="input-wrap">
+                <span class="input-prefix">SC</span>
+                <input class="input" id="cw-relid" placeholder="e.g. 90152208" value="${esc(w.relId)}" ${w.fetching ? "disabled" : ""} />
+              </div>
+              <span class="field-hint">10-digit SCB Kenya customer reference</span>
+            </label>
+            <div class="info-banner blue">
+              <i data-lucide="info"></i>
+              <div>The system will automatically detect duplicates. If a customer with this RelId already exists in Vault22, you'll be offered to open the existing profile instead of creating a duplicate.</div>
+            </div>
+            <button class="btn btn-primary btn-lg btn-full" id="cw-fetch" ${w.fetching ? "disabled" : ""}>
+              <i data-lucide="${w.fetching ? 'loader-2' : 'search'}" ${w.fetching ? 'class="spin"' : ''}></i>
+              ${w.fetching ? "Fetching from SCB CIF…" : "Fetch Customer"}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (w.step === 1 && w.fetched) {
+    const f = w.fetched;
+    body = `
+      <div class="stack gap-5">
+        <div class="card card-pad-lg">
+          <div class="row justify-between align-start mb-5">
+            <div>
+              <div class="row gap-2 mb-1">
+                <h2 class="t-lg fw-700 c-ink">${f.name}</h2>
+                ${badge("KYC " + f.kycStatus, "green")}
+                ${badge(f.kycTier, "blue")}
+              </div>
+              <div class="t-xs c-muted">RelId <span class="font-mono c-ink">${f.relId}</span> · TIN <span class="font-mono c-ink">${f.tin}</span> · Reg <span class="font-mono c-ink">${f.registration}</span></div>
+            </div>
+            ${badge("Fetched from SCB CIF", "ink")}
+          </div>
+          <div class="grid-2" style="gap:20px;">
+            ${[
+              ["Legal Name", f.name], ["Entity Type", f.type],
+              ["Registration No.", f.registration], ["Tax Identification No.", f.tin],
+              ["Primary Contact Email", f.email], ["Primary Phone", f.phone],
+              ["Registered Address", f.address], ["Authorised Signatory", f.director]
+            ].map(([label, val]) => `
+              <label class="field">
+                <span class="field-label">${label}</span>
+                <div class="input-wrap"><input class="input" value="${esc(val)}" /></div>
+              </label>
+            `).join("")}
+          </div>
+        </div>
+        <div class="card card-pad">
+          <div class="row gap-3 align-start">
+            <div style="width:36px;height:36px;border-radius:8px;background:var(--amber-light);color:#92400E;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="alert-triangle" style="width:16px;height:16px;"></i></div>
+            <div class="flex-1">
+              <div class="t-md fw-600 c-ink">Investor profile enrichment</div>
+              <div class="t-xs c-muted mt-1">The following fields are required by Sanlam but missing from SCB CIF — please complete before continuing.</div>
+              <div class="grid-3 mt-4">
+                <label class="field"><span class="field-label">Investor Risk Profile</span>
+                  <div class="select-wrap"><select class="select"><option>Select profile</option><option>Conservative</option><option>Moderate</option><option>Aggressive</option></select><i data-lucide="chevron-down" class="select-chevron"></i></div>
+                </label>
+                <label class="field"><span class="field-label">Source of Funds</span>
+                  <div class="select-wrap"><select class="select"><option>Select source</option><option>Operating cash flow</option><option>Sale proceeds</option><option>Treasury surplus</option></select><i data-lucide="chevron-down" class="select-chevron"></i></div>
+                </label>
+                <label class="field"><span class="field-label">Expected Investment Size</span>
+                  <div class="select-wrap"><select class="select"><option>Select band</option><option>Under KES 2M</option><option>KES 2M – 20M</option><option>Over KES 20M</option></select><i data-lucide="chevron-down" class="select-chevron"></i></div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (w.step === 2 && w.fetched) {
+    body = `
+      <div class="card card-pad-lg">
+        <div class="mb-5">
+          <h2 class="t-lg fw-700 c-ink">Select primary settlement account</h2>
+          <p class="t-md c-muted">Funds for buys will be debited here. Sell proceeds will be credited here. You can change this later.</p>
+        </div>
+        <div class="stack gap-2">
+          ${w.fetched.bankAccounts.map((a, i) => `
+            <button class="select-row ${w.selectedAccount === i ? "selected" : ""}" data-acct="${i}">
+              <div class="select-row-avatar" style="background:${w.selectedAccount === i ? 'var(--blue)' : 'var(--surface)'}; color:${w.selectedAccount === i ? '#fff' : 'var(--ink-soft)'};"><i data-lucide="credit-card" style="width:18px;height:18px;"></i></div>
+              <div class="flex-1">
+                <div class="row gap-2">
+                  <div class="fw-600 c-ink">${a.type}</div>
+                  ${a.primary ? badge("Primary", "blue") : ""}
+                </div>
+                <div class="t-sm font-mono c-muted mt-1">${a.no}</div>
+              </div>
+              <div class="text-right">
+                <div class="t-xs c-muted">${a.currency} balance</div>
+                <div class="fw-600 c-ink">${a.currency} ${a.balance}</div>
+              </div>
+              <div class="select-check"><i data-lucide="check"></i></div>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (w.step === 3 && !w.created) {
+    body = `
+      <div class="card card-pad-xl">
+        <div style="max-width:480px; margin:0 auto;">
+          <h2 class="t-lg fw-700 c-ink mb-1">Ready to create</h2>
+          <p class="t-md c-muted mb-5">We'll create the customer record in both Vault22 and Sanlam. This typically takes 8–12 seconds.</p>
+          <div class="stack gap-2 mb-5">
+            ${[
+              { label: "Create profile in Vault22", system: "POST /v1/customers" },
+              { label: "Register investor with Sanlam", system: "POST /sanlam/investors" },
+              { label: "Link SCB bank account", system: "PATCH /v1/customers/:id/bank" },
+              { label: "Enrol for daily reconciliation", system: "internal" },
+            ].map(t => `
+              <div class="row gap-3" style="padding:12px; border-radius:8px; background:var(--surface);">
+                <div style="width:20px;height:20px;border-radius:50%; background:#fff; border:1px solid var(--border); display:flex;align-items:center;justify-content:center;">
+                  ${w.creating ? '<i data-lucide="loader-2" class="spin" style="width:10px;height:10px;color:var(--blue);"></i>' : '<i data-lucide="circle" style="width:8px;height:8px;color:var(--muted);"></i>'}
+                </div>
+                <div class="flex-1">
+                  <div class="t-md fw-600 c-ink">${t.label}</div>
+                  <div class="t-xs font-mono c-muted">${t.system}</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <button class="btn btn-primary btn-lg btn-full" id="cw-create" ${w.creating ? "disabled" : ""}>
+            <i data-lucide="${w.creating ? 'loader-2' : 'check'}" ${w.creating ? 'class="spin"' : ''}></i>
+            ${w.creating ? "Creating customer…" : "Confirm & Create"}
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (w.step === 3 && w.created) {
+    const f = w.fetched;
+    body = `
+      <div class="card" style="padding:40px;">
+        <div style="max-width:480px; margin:0 auto; text-align:center;">
+          <div class="success-circle"><i data-lucide="check-circle-2"></i></div>
+          <h2 class="t-2xl fw-700 c-ink">Customer created successfully</h2>
+          <p class="t-md c-muted mt-1 mb-5">${f.name} is now onboarded. You can place their first buy order straight away.</p>
+          <div style="background:var(--surface); border-radius:8px; padding:16px; margin-bottom:20px; text-align:left;">
+            <div class="grid-2" style="gap:12px;">
+              <div><div class="t-xs c-muted">Customer ID</div><div class="font-mono fw-600 c-ink mt-1">CU-1006</div></div>
+              <div><div class="t-xs c-muted">Sanlam Investor ID</div><div class="font-mono fw-600 c-ink mt-1">SAN-INV-881420</div></div>
+              <div><div class="t-xs c-muted">Bank Account</div><div class="font-mono fw-600 c-ink mt-1">${f.bankAccounts[w.selectedAccount].no}</div></div>
+              <div><div class="t-xs c-muted">Status</div><div class="mt-1">${badge("Active", "green")}</div></div>
+            </div>
+          </div>
+          <div class="row gap-2">
+            <button class="btn btn-secondary flex-1" data-nav-link="customers">Back to customers</button>
+            <button class="btn btn-primary flex-1" data-nav-link="buy-new"><i data-lucide="shopping-cart"></i>Place first buy</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const footer = w.step < 3 ? `
+    <div class="row justify-between">
+      <button class="btn btn-ghost" id="cw-back"><i data-lucide="arrow-left"></i>${w.step === 0 ? "Cancel" : "Back"}</button>
+      <div>
+        ${w.step === 1 ? `<button class="btn btn-primary" id="cw-next" ${!w.fetched ? "disabled" : ""}>Continue to bank account<i data-lucide="arrow-right"></i></button>` : ""}
+        ${w.step === 2 ? `<button class="btn btn-primary" id="cw-next">Review & create<i data-lucide="arrow-right"></i></button>` : ""}
+      </div>
+    </div>
+  ` : "";
+
+  return `
+    <div class="page-narrow stack gap-5">
+      <div>
+        ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Customers", to:"customers"}, {label:"Onboard New Customer"}])}
+        <h1 class="page-title">Onboard New Customer</h1>
+        <p class="page-desc">Fetch from SCB core, enrich details, and create the customer record in Vault22 and Sanlam.</p>
+      </div>
+      <div class="card card-pad-lg">${renderStepHeader(steps, w.step)}</div>
+      ${body}
+      ${footer}
+    </div>
+  `;
+}
+
+// ========== CUSTOMER DETAIL ==========
+function renderCustomerDetail() {
+  const c = CUSTOMERS.find(x => x.id === app.pageData.id) || CUSTOMERS[0];
+  const custOrders = ORDERS.filter(o => o.customer === c.name);
+  return `
+    <div class="page stack gap-5">
+      <div>
+        ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Customers", to:"customers"}, {label:c.name}])}
+        <div class="row justify-between align-start mt-2">
+          <div class="row gap-4">
+            <div class="avatar avatar-lg avatar-gradient">${initials(c.name)}</div>
+            <div>
+              <div class="row gap-2">
+                <h1 class="page-title" style="margin-top:0;">${c.name}</h1>
+                ${badge(c.status, tone(c.status))}
+              </div>
+              <div class="t-xs c-muted mt-1">${c.id} · RelId <span class="font-mono c-ink-soft">${c.relId}</span> · Onboarded ${c.created}</div>
+            </div>
+          </div>
+          <div class="row gap-2">
+            <button class="btn btn-secondary" data-nav-link="sell-new"><i data-lucide="arrow-down-to-line"></i>New Sell</button>
+            <button class="btn btn-primary" data-nav-link="buy-new"><i data-lucide="shopping-cart"></i>New Buy Order</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        ${[
+          { label: "Total AUM", value: c.aum, sub: "across all funds" },
+          { label: "Active Holdings", value: String(c.holdings), sub: "fund positions" },
+          { label: "MTD Interest", value: "KES 68,410", sub: "accrued to date" },
+          { label: "Lifetime Return", value: "+KES 462K", sub: "since onboarding" },
+        ].map(s => `
+          <div class="card card-pad-sm">
+            <div class="stat-label">${s.label}</div>
+            <div class="stat-value-sm">${s.value}</div>
+            <div class="stat-sub">${s.sub}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="grid-3">
+        <div class="card card-pad col-span-2">
+          <div class="row justify-between mb-4">
+            <h3 class="t-md fw-700 c-ink">Holdings</h3>
+            <button class="btn btn-ghost btn-sm">View breakdown</button>
+          </div>
+          <div class="stack gap-2">
+            ${[{ fund: "Sanlam Shilingi Money Market", units: c.holdings > 0 ? "17,672.31" : "—", value: c.holdings > 0 ? c.aum : "—", pct: c.holdings > 0 ? 85 : 0 }].map(h => `
+              <div style="padding:16px; border-radius:8px; border:1px solid var(--border-soft);">
+                <div class="row justify-between">
+                  <div>
+                    <div class="t-md fw-600 c-ink">${h.fund}</div>
+                    <div class="t-xs c-muted mt-1">${h.units !== "—" ? h.units + " units" : "No active position"}</div>
+                  </div>
+                  <div class="text-right">
+                    <div class="fw-700 c-ink">${h.value}</div>
+                    <div class="t-xs c-green-dark">+12.45% YTM</div>
+                  </div>
+                </div>
+                ${h.pct > 0 ? `<div class="progress mt-3"><div class="progress-fill" style="width:${h.pct}%; background:var(--blue);"></div></div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <h3 class="t-md fw-700 c-ink mb-4">Contact & Accounts</h3>
+          <div class="stack gap-3">
+            <div class="row gap-2 align-start"><i data-lucide="mail" style="width:14px;height:14px;color:var(--muted);margin-top:2px;"></i><span class="t-md c-ink-soft">${c.email}</span></div>
+            <div class="row gap-2 align-start"><i data-lucide="phone" style="width:14px;height:14px;color:var(--muted);margin-top:2px;"></i><span class="t-md c-ink-soft">${c.phone}</span></div>
+            <div class="row gap-2 align-start"><i data-lucide="map-pin" style="width:14px;height:14px;color:var(--muted);margin-top:2px;"></i><span class="t-md c-ink-soft">${c.address}</span></div>
+          </div>
+          <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-soft);">
+            <div class="t-xs fw-600 c-muted mb-2">LINKED BANK ACCOUNTS</div>
+            ${c.bankAccounts.map(a => `
+              <div class="row gap-2" style="padding:8px 0;">
+                <i data-lucide="credit-card" style="width:14px;height:14px;color:var(--muted);"></i>
+                <div class="flex-1">
+                  <div class="t-sm fw-600 c-ink">${a.type}</div>
+                  <div class="t-xs font-mono c-muted">${a.no}</div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row justify-between" style="padding:20px 20px 12px;">
+          <h3 class="t-md fw-700 c-ink">Transaction History</h3>
+          <div class="row gap-2">
+            <button class="btn btn-secondary btn-sm"><i data-lucide="filter"></i>Filter</button>
+            <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>Export</button>
+          </div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Order ID</th><th>Type</th><th>Fund</th><th class="numeric">Amount</th><th class="numeric">Units</th><th>Status</th><th class="numeric">Date</th></tr></thead>
+          <tbody>
+            ${custOrders.length === 0 ? '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted);">No transactions yet</td></tr>' : custOrders.map(o => `
+              <tr data-order="${o.id}" data-order-type="${o.type}">
+                <td class="font-mono t-xs c-ink-soft">${o.id}</td>
+                <td>${badge(o.type, o.type === "Buy" ? "blue" : "default")}</td>
+                <td class="c-ink-soft">${o.fund}</td>
+                <td class="numeric fw-600 c-ink">${o.amount}</td>
+                <td class="numeric font-mono t-sm c-ink-soft">${o.units}</td>
+                <td>${badge(o.status, tone(o.status))}</td>
+                <td class="numeric t-xs c-muted">${o.submitted}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ========== ORDERS LIST ==========
+function renderOrdersList(type) {
+  const title = type + " Orders";
+  const list = ORDERS.filter(o => o.type === type);
+  return `
+    <div class="page stack gap-5">
+      <div class="page-header">
+        <div>
+          ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:title}])}
+          <h1 class="page-title">${title}</h1>
+          <p class="page-desc">${type === "Buy" ? "Subscriptions into Sanlam funds — cut-off 07:00 AM." : "Redemption requests — cut-off 07:15 AM. Sanlam settles proceeds to customer accounts."}</p>
+        </div>
+        <button class="btn btn-primary" data-nav-link="${type === "Buy" ? "buy-new" : "sell-new"}"><i data-lucide="plus"></i>New ${type} Order</button>
+      </div>
+
+      <div class="grid-4">
+        ${[
+          { label: "Today's " + type + "s", value: String(list.length), sub: "orders placed" },
+          { label: "Total Volume", value: "KES 14.8M", sub: "gross amount" },
+          { label: "Success Rate", value: "94.2%", sub: "last 30 days" },
+          { label: "Avg Settlement", value: "T+0", sub: "same day" },
+        ].map(s => `
+          <div class="card card-pad-sm">
+            <div class="stat-label">${s.label}</div>
+            <div class="stat-value-sm">${s.value}</div>
+            <div class="stat-sub">${s.sub}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="card">
+        <div class="row gap-3" style="padding:16px; border-bottom:1px solid var(--border-soft);">
+          <div class="flex-1" style="position:relative;">
+            <i data-lucide="search" class="search-icon"></i>
+            <input class="search-input" placeholder="Search orders…" />
+          </div>
+          <div class="select-wrap">
+            <select class="select"><option>All statuses</option><option>Settled</option><option>Pending</option><option>Failed</option></select>
+            <i data-lucide="chevron-down" class="select-chevron"></i>
+          </div>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="calendar"></i>Date</button>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>Export</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Fund</th><th class="numeric">Amount</th><th class="numeric">Units</th><th>Status</th><th class="numeric">Submitted</th></tr></thead>
+          <tbody>
+            ${list.map(o => `
+              <tr data-order="${o.id}" data-order-type="${o.type}">
+                <td class="font-mono t-xs c-ink-soft">${o.id}</td>
+                <td class="c-ink">${o.customer}</td>
+                <td class="c-ink-soft">${o.fund}</td>
+                <td class="numeric fw-600 c-ink">${o.amount}</td>
+                <td class="numeric font-mono t-sm c-ink-soft">${o.units}</td>
+                <td>${badge(o.status, tone(o.status))}</td>
+                <td class="numeric t-xs c-muted">${o.submitted}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ========== BUY WIZARD ==========
+function renderBuyWizard() {
+  const w = app.bw;
+  const steps = ["Customer", "Fund & Amount", "Review", "Track"];
+  let body = "";
+
+  if (w.step === 0) {
+    body = `
+      <div class="card card-pad-lg">
+        <h2 class="t-lg fw-700 c-ink mb-1">Select customer</h2>
+        <p class="t-md c-muted mb-5">Search by name, Customer ID, or RelId.</p>
+        <div style="position:relative;" class="mb-4">
+          <i data-lucide="search" class="search-icon"></i>
+          <input class="search-input" placeholder="Start typing to search…" style="padding-top:12px;padding-bottom:12px;" />
+        </div>
+        <div class="stack gap-2">
+          ${CUSTOMERS.filter(c => c.status === "Active").map(c => `
+            <button class="select-row ${w.customer?.id === c.id ? "selected" : ""}" data-bw-customer="${c.id}">
+              <div class="avatar avatar-md avatar-blue">${initials(c.name)}</div>
+              <div class="flex-1">
+                <div class="fw-600 c-ink">${c.name}</div>
+                <div class="t-xs c-muted mt-1">${c.id} · RelId ${c.relId} · AUM ${c.aum}</div>
+              </div>
+              ${badge(c.status, "green")}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (w.step === 1) {
+    const c = w.customer;
+    const est = w.amount && w.fund ? (Number(w.amount.toString().replace(/,/g, "")) / Number(w.fund.nav)).toFixed(2) : "—";
+    body = `
+      <div class="stack gap-5">
+        <div class="card card-pad-lg">
+          <h2 class="t-lg fw-700 c-ink mb-1">Choose a fund</h2>
+          <p class="t-md c-muted mb-5">Select the Sanlam fund to subscribe into.</p>
+          <div class="grid-2" style="gap:12px;">
+            ${FUNDS.map(f => `
+              <button class="select-row ${w.fund?.code === f.code ? "selected" : ""}" data-bw-fund="${f.code}" style="padding:20px;align-items:flex-start;display:block;">
+                <div class="row justify-between mb-3">
+                  <div class="fund-icon"><i data-lucide="sparkles"></i></div>
+                  ${badge(f.risk, "blue")}
+                </div>
+                <div class="t-md fw-700 c-ink">${f.name}</div>
+                <div class="t-xs font-mono c-muted mt-1">${f.code}</div>
+                <div class="row gap-2 mt-4" style="align-items:baseline;">
+                  <div class="t-3xl fw-700 c-green-dark tracking-tighter">${f.yield}</div>
+                  <div class="t-xs c-muted">indicative yield</div>
+                </div>
+                <div class="row gap-4 mt-2 t-xs c-muted">
+                  <div>NAV <span class="fw-600 c-ink-soft">${f.nav}</span></div>
+                  <div>AUM <span class="fw-600 c-ink-soft">${f.aum}</span></div>
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+        ${w.fund ? `
+          <div class="card card-pad-lg">
+            <h2 class="t-lg fw-700 c-ink mb-5">Investment amount</h2>
+            <div class="grid-2" style="gap:20px;">
+              <label class="field">
+                <span class="field-label">Amount to invest</span>
+                <div class="input-wrap">
+                  <span class="input-prefix">${w.fund.currency}</span>
+                  <input class="input" id="bw-amount" placeholder="0.00" value="${esc(w.amount)}" />
+                </div>
+                <span class="field-hint">Minimum ${w.fund.currency} 100,000. Expected units ≈ ${est}</span>
+              </label>
+              <div>
+                <span class="field-label">Debit account</span>
+                <div class="stack gap-2">
+                  ${c.bankAccounts.map((a, i) => `
+                    <button class="select-row ${w.bankAcct === i ? "selected" : ""}" data-bw-acct="${i}" style="padding:12px;">
+                      <i data-lucide="credit-card" style="width:14px;height:14px;color:${w.bankAcct === i ? 'var(--blue)' : 'var(--muted)'};"></i>
+                      <div class="flex-1">
+                        <div class="t-sm fw-600 c-ink">${a.type}</div>
+                        <div class="font-mono t-xs c-muted">${a.no} · Bal ${a.currency} ${a.balance}</div>
+                      </div>
+                      ${w.bankAcct === i ? '<i data-lucide="check" style="width:14px;height:14px;color:var(--blue);stroke-width:3;"></i>' : ""}
+                    </button>
+                  `).join("")}
+                </div>
+              </div>
+            </div>
+            <div class="info-banner blue mt-5">
+              <div class="row gap-2" style="flex-shrink:0;">
+                <div class="toggle ${w.recurring ? "on" : ""}" id="bw-recurring-toggle"><div class="toggle-thumb"></div></div>
+              </div>
+              <div class="flex-1">
+                <div class="t-md fw-600 c-ink">Make this a recurring investment</div>
+                <div class="t-xs c-ink-soft mt-1">Schedule the same amount to auto-invest monthly. You can cancel anytime.</div>
+              </div>
+              ${w.recurring ? `
+                <div class="select-wrap" style="width:180px;">
+                  <select class="select"><option>Monthly on 1st</option><option>Monthly on 15th</option><option>Weekly</option></select>
+                  <i data-lucide="chevron-down" class="select-chevron"></i>
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  } else if (w.step === 2) {
+    const est = w.amount && w.fund ? (Number(w.amount.toString().replace(/,/g, "")) / Number(w.fund.nav)).toFixed(2) : "0";
+    const rows = [
+      { k: "Customer", v: w.customer?.name, sub: `${w.customer?.id} · ${w.customer?.relId}` },
+      { k: "Fund", v: w.fund?.name, sub: `${w.fund?.code} · NAV ${w.fund?.nav}` },
+      { k: "Amount", v: `${w.fund?.currency} ${w.amount || "0"}`, sub: `≈ ${est} units at today's NAV` },
+      { k: "Debit Account", v: w.customer?.bankAccounts[w.bankAcct]?.type, sub: w.customer?.bankAccounts[w.bankAcct]?.no },
+      { k: "Recurring", v: w.recurring ? "Monthly on 1st" : "One-time order", sub: w.recurring ? "Auto-scheduled" : null },
+      { k: "Expected Settlement", v: "T+0 · today", sub: "subject to Sanlam confirmation by 14:00" },
+    ];
+    body = `
+      <div class="card card-pad-lg">
+        <h2 class="t-lg fw-700 c-ink mb-1">Review & confirm</h2>
+        <p class="t-md c-muted mb-5">Verify the order details. This will be included in today's buy batch at 07:00 AM.</p>
+        <div class="review-box">
+          ${rows.map(r => `
+            <div class="review-row">
+              <div class="review-key">${r.k}</div>
+              <div>
+                <div class="review-val">${esc(r.v)}</div>
+                ${r.sub ? `<div class="review-sub">${esc(r.sub)}</div>` : ""}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="info-banner amber mt-5">
+          <i data-lucide="alert-triangle"></i>
+          <div>Once submitted, the order becomes part of today's batch and cannot be cancelled after 07:00 AM. The debit authorisation is enforced at batch close.</div>
+        </div>
+      </div>
+    `;
+  } else if (w.step === 3 && w.submitted) {
+    const events = [
+      { label: "Order received", desc: "Submitted by Amina Mukasa", ts: "21 Apr 2026, 14:12", status: "done" },
+      { label: "Debit authorised", desc: `Debit ${w.fund.currency} ${w.amount || "0"} from ${w.customer.bankAccounts[w.bankAcct].no}`, ts: "21 Apr 2026, 14:12", status: "done" },
+      { label: "Added to buy batch", desc: "Batch SCB-BUY-20260422 · cut-off tomorrow 07:00 AM", ts: "21 Apr 2026, 14:12", status: "active" },
+      { label: "Sent to Sanlam", desc: "POST /sanlam/purchase — awaiting cut-off", ts: "Scheduled 22 Apr 07:00", status: "pending" },
+      { label: "Sanlam confirmation", desc: "Units allocated at day's NAV", ts: "Expected by 14:00", status: "pending" },
+      { label: "Settled", desc: "Units credited to customer holding", ts: "Expected EOD", status: "pending" },
+    ];
+    body = `
+      <div class="stack gap-5">
+        <div class="card card-pad-xl text-center">
+          <div class="blue-circle"><i data-lucide="check-circle-2"></i></div>
+          <h2 class="t-2xl fw-700 c-ink">Order submitted</h2>
+          <p class="t-md c-muted mt-1">Your buy order has been added to today's batch. Track progress below.</p>
+          <div class="row gap-2 justify-center mt-4">
+            ${badge("BUY-20260421-0013", "ink")}
+            <button class="text-link"><i data-lucide="copy"></i>Copy</button>
+          </div>
+        </div>
+        <div class="card card-pad-lg">
+          <h3 class="t-md fw-700 c-ink mb-5">Order lifecycle</h3>
+          <div class="timeline">${renderTimeline(events)}</div>
+        </div>
+        <div class="row gap-2">
+          <button class="btn btn-secondary flex-1" data-nav-link="buy-orders">Go to orders</button>
+          <button class="btn btn-primary flex-1" id="bw-another"><i data-lucide="plus"></i>Place another order</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const footer = w.step < 3 ? `
+    <div class="row justify-between">
+      <button class="btn btn-ghost" id="bw-back"><i data-lucide="arrow-left"></i>${w.step === 0 ? "Cancel" : "Back"}</button>
+      ${w.step === 0 ? `<button class="btn btn-primary" id="bw-next" ${!w.customer ? "disabled" : ""}>Continue<i data-lucide="arrow-right"></i></button>` : ""}
+      ${w.step === 1 ? `<button class="btn btn-primary" id="bw-next" ${!w.fund || !w.amount ? "disabled" : ""}>Review order<i data-lucide="arrow-right"></i></button>` : ""}
+      ${w.step === 2 ? `<button class="btn btn-primary" id="bw-submit" ${w.submitting ? "disabled" : ""}><i data-lucide="${w.submitting ? 'loader-2' : 'check'}" ${w.submitting ? 'class="spin"' : ''}></i>${w.submitting ? "Submitting…" : "Confirm & submit"}</button>` : ""}
+    </div>
+  ` : "";
+
+  return `
+    <div class="page-narrow stack gap-5">
+      <div>
+        ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Buy Orders", to:"buy-orders"}, {label:"New Buy Order"}])}
+        <h1 class="page-title">New Buy Order</h1>
+        <p class="page-desc">Subscribe an SME client into a Sanlam fund. Cut-off is 07:00 AM East Africa Time.</p>
+      </div>
+      <div class="card card-pad-lg">${renderStepHeader(steps, w.step)}</div>
+      ${body}
+      ${footer}
+    </div>
+  `;
+}
+
+// ========== SELL WIZARD ==========
+function renderSellWizard() {
+  const w = app.sw;
+  const steps = ["Customer", "Holding & Amount", "Review", "Track"];
+  const holding = { fund: "Sanlam Shilingi Money Market", units: "17,672.31", value: "KES 18,420,500", currency: "KES" };
+  let body = "";
+
+  if (w.step === 0) {
+    body = `
+      <div class="card card-pad-lg">
+        <h2 class="t-lg fw-700 c-ink mb-5">Select customer</h2>
+        <div class="stack gap-2">
+          ${CUSTOMERS.filter(c => c.holdings > 0).map(c => `
+            <button class="select-row ${w.customer?.id === c.id ? "selected" : ""}" data-sw-customer="${c.id}">
+              <div class="avatar avatar-md avatar-blue">${initials(c.name)}</div>
+              <div class="flex-1">
+                <div class="fw-600 c-ink">${c.name}</div>
+                <div class="t-xs c-muted mt-1">${c.holdings} active holding · AUM ${c.aum}</div>
+              </div>
+              <i data-lucide="chevron-right" style="width:16px;height:16px;color:var(--muted);"></i>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (w.step === 1) {
+    const c = w.customer;
+    const est = w.amount ? (Number(w.amount.toString().replace(/,/g, "")) / 1.0423).toFixed(2) : "—";
+    body = `
+      <div class="stack gap-5">
+        <div class="card card-pad-lg">
+          <h2 class="t-lg fw-700 c-ink mb-1">Holding to redeem from</h2>
+          <p class="t-md c-muted mb-5">${c.name}</p>
+          <div class="select-row selected" style="cursor:default;">
+            <div class="fund-icon"><i data-lucide="sparkles"></i></div>
+            <div class="flex-1">
+              <div class="t-md fw-700 c-ink">${holding.fund}</div>
+              <div class="t-xs c-muted mt-1">${holding.units} units · Yield 12.45%</div>
+            </div>
+            <div class="text-right">
+              <div class="fw-700 t-lg c-ink">${holding.value}</div>
+              <div class="t-xs c-muted">current market value</div>
+            </div>
+          </div>
+        </div>
+        <div class="card card-pad-lg">
+          <h2 class="t-lg fw-700 c-ink mb-5">Redemption amount</h2>
+          <div class="grid-2 mb-5">
+            <button class="select-row ${w.mode === "partial" ? "selected" : ""}" data-sw-mode="partial" style="display:block;padding:16px;">
+              <div class="t-md fw-700 c-ink">Partial redemption</div>
+              <div class="t-xs c-muted mt-1">Withdraw a specified amount. Remaining units stay invested.</div>
+            </button>
+            <button class="select-row ${w.mode === "full" ? "selected" : ""}" data-sw-mode="full" style="display:block;padding:16px;">
+              <div class="row gap-2">
+                <div class="t-md fw-700 c-ink">Full redemption</div>
+                ${badge("FWIC eligible", "amber")}
+              </div>
+              <div class="t-xs c-muted mt-1">Close the holding. Interest for days invested paid to bank account at month-end.</div>
+            </button>
+          </div>
+          <label class="field">
+            <span class="field-label">${w.mode === "full" ? "Total to redeem (auto)" : "Amount to redeem"}</span>
+            <div class="input-wrap">
+              <span class="input-prefix">${holding.currency}</span>
+              <input class="input" id="sw-amount" placeholder="0.00" value="${esc(w.amount)}" />
+            </div>
+            <span class="field-hint">Max ${holding.value}. Estimated units ≈ ${est}</span>
+          </label>
+          <div class="info-banner blue mt-5">
+            <i data-lucide="info"></i>
+            <div>Proceeds will be credited by Sanlam directly to the customer's SCB primary settlement account ending in ${c.bankAccounts[0].no.slice(-4)}. No manual step required.</div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (w.step === 2) {
+    const c = w.customer;
+    const est = w.amount ? (Number(w.amount.toString().replace(/,/g, "")) / 1.0423).toFixed(2) : "0";
+    const rows = [
+      { k: "Customer", v: c?.name, sub: c?.id },
+      { k: "Holding", v: holding.fund, sub: `${holding.units} units` },
+      { k: "Redemption type", v: w.mode === "full" ? "Full redemption" : "Partial redemption" },
+      { k: "Amount", v: `${holding.currency} ${w.amount || "0"}`, sub: `≈ ${est} units` },
+      { k: "Credit to", v: c?.bankAccounts[0].type, sub: c?.bankAccounts[0].no },
+      { k: "Settlement", v: "T+0 · same day", sub: "on Sanlam confirmation by 14:00" },
+    ];
+    body = `
+      <div class="card card-pad-lg">
+        <h2 class="t-lg fw-700 c-ink mb-1">Review & confirm</h2>
+        <p class="t-md c-muted mb-5">Verify before submitting. Order enters the 07:15 AM sell batch.</p>
+        <div class="review-box">
+          ${rows.map(r => `
+            <div class="review-row">
+              <div class="review-key">${r.k}</div>
+              <div>
+                <div class="review-val">${esc(r.v)}</div>
+                ${r.sub ? `<div class="review-sub">${esc(r.sub)}</div>` : ""}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else if (w.step === 3 && w.submitted) {
+    const c = w.customer;
+    const events = [
+      { label: "Redemption request received", desc: `${w.mode === "full" ? "Full" : "Partial"} redemption of ${holding.currency} ${w.amount}`, ts: "21 Apr 2026, 14:22", status: "done" },
+      { label: "Added to sell batch", desc: "Batch SCB-SELL-20260422 · cut-off tomorrow 07:15 AM", ts: "21 Apr 2026, 14:22", status: "active" },
+      { label: "Sent to Sanlam", desc: "POST /sanlam/redemption — awaiting cut-off", ts: "Scheduled 22 Apr 07:15", status: "pending" },
+      { label: "Sanlam executes redemption", desc: "Units redeemed at day's NAV", ts: "Expected by 14:00", status: "pending" },
+      { label: "Proceeds paid to customer", desc: `Credit to ${c.bankAccounts[0].no}`, ts: "Expected EOD", status: "pending" },
+    ];
+    body = `
+      <div class="stack gap-5">
+        <div class="card card-pad-xl text-center">
+          <div class="success-circle"><i data-lucide="check-circle-2"></i></div>
+          <h2 class="t-2xl fw-700 c-ink">Redemption submitted</h2>
+          <p class="t-md c-muted mt-1">Proceeds will be paid directly by Sanlam to the customer's SCB account.</p>
+          <div class="row gap-2 justify-center mt-4">${badge("SELL-20260421-0005", "ink")}</div>
+        </div>
+        <div class="card card-pad-lg">
+          <h3 class="t-md fw-700 c-ink mb-5">Redemption lifecycle</h3>
+          <div class="timeline">${renderTimeline(events)}</div>
+        </div>
+        <div class="row gap-2">
+          <button class="btn btn-secondary flex-1" data-nav-link="sell-orders">Go to sell orders</button>
+          <button class="btn btn-primary flex-1" id="sw-view-cust">View customer</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const footer = w.step < 3 ? `
+    <div class="row justify-between">
+      <button class="btn btn-ghost" id="sw-back"><i data-lucide="arrow-left"></i>${w.step === 0 ? "Cancel" : "Back"}</button>
+      ${w.step === 0 ? `<button class="btn btn-primary" id="sw-next" ${!w.customer ? "disabled" : ""}>Continue<i data-lucide="arrow-right"></i></button>` : ""}
+      ${w.step === 1 ? `<button class="btn btn-primary" id="sw-next" ${!w.amount ? "disabled" : ""}>Review order<i data-lucide="arrow-right"></i></button>` : ""}
+      ${w.step === 2 ? `<button class="btn btn-primary" id="sw-submit" ${w.submitting ? "disabled" : ""}><i data-lucide="${w.submitting ? 'loader-2' : 'check'}" ${w.submitting ? 'class="spin"' : ''}></i>${w.submitting ? "Submitting…" : "Confirm & submit"}</button>` : ""}
+    </div>
+  ` : "";
+
+  return `
+    <div class="page-narrow stack gap-5">
+      <div>
+        ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Sell Orders", to:"sell-orders"}, {label:"New Sell Order"}])}
+        <h1 class="page-title">New Sell Order</h1>
+        <p class="page-desc">Redeem from an existing customer holding. Cut-off is 07:15 AM. Sanlam credits proceeds directly to the customer's SCB account.</p>
+      </div>
+      <div class="card card-pad-lg">${renderStepHeader(steps, w.step)}</div>
+      ${body}
+      ${footer}
+    </div>
+  `;
+}
+
+// ========== TIMELINE HELPER ==========
+function renderTimeline(events) {
+  return events.map((t, i, arr) => {
+    let iconHtml = '<i data-lucide="circle" style="width:6px;height:6px;color:var(--muted);"></i>';
+    if (t.status === "done") iconHtml = '<i data-lucide="check"></i>';
+    else if (t.status === "active") iconHtml = '<i data-lucide="loader-2" class="spin"></i>';
+    else if (t.status === "failed") iconHtml = '<i data-lucide="x"></i>';
+    return `
+      <div class="timeline-item">
+        <div class="timeline-spine">
+          <div class="timeline-dot ${t.status}">${iconHtml}</div>
+          ${i < arr.length - 1 ? `<div class="timeline-line ${t.status === "done" ? "done" : ""}"></div>` : ""}
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-title ${t.status === "pending" ? "pending" : ""}">
+            ${t.label}
+            ${t.status === "active" ? badge("In progress", "blue") : ""}
+            ${t.status === "failed" ? badge("Failed", "red") : ""}
+          </div>
+          <div class="timeline-desc">${t.desc}</div>
+          <div class="timeline-ts font-mono">${t.ts}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ========== ORDER DETAIL ==========
+function renderOrderDetail(type) {
+  const order = ORDERS.find(o => o.id === app.pageData.id) || ORDERS.find(o => o.type === type) || ORDERS[0];
+  const isBuy = order.type === "Buy";
+  const timeline = isBuy ? [
+    { label: "Order received", desc: "Submitted by admin", ts: order.submitted, status: "done" },
+    { label: "Debit authorised", desc: "Customer CASA debited to collection", ts: order.submitted, status: "done" },
+    { label: "Added to buy batch", desc: "Aggregated into daily omnibus", ts: order.submitted, status: "done" },
+    { label: "Sent to Sanlam", desc: "POST /sanlam/purchase", ts: "21 Apr 07:00", status: order.status === "Failed" ? "failed" : "done" },
+    { label: "Sanlam execution", desc: order.status === "Failed" ? "Timeout — funds not received by Sanlam" : `Executed at NAV 1.0423 · ${order.units} units allocated`, ts: order.status === "Failed" ? "21 Apr 14:00" : "21 Apr 12:18", status: order.status === "Failed" ? "failed" : (order.status === "Executed" || order.status === "Settled") ? "done" : "active" },
+    { label: "Units credited to customer", desc: `${order.units} units added to holding`, ts: "21 Apr 13:02", status: order.status === "Settled" ? "done" : "pending" },
+  ] : [
+    { label: "Redemption received", desc: "Submitted by admin", ts: order.submitted, status: "done" },
+    { label: "Added to sell batch", desc: "Aggregated into daily omnibus", ts: order.submitted, status: "done" },
+    { label: "Sent to Sanlam", desc: "POST /sanlam/redemption", ts: "21 Apr 07:15", status: "done" },
+    { label: "Sanlam execution", desc: `Redeemed at NAV 1.0423 · ${order.units} units`, ts: "21 Apr 12:40", status: order.status === "Settled" ? "done" : "active" },
+    { label: "Proceeds credited", desc: "Paid to customer SCB account", ts: "21 Apr 13:20", status: order.status === "Settled" ? "done" : "pending" },
+  ];
+  return `
+    <div class="page-narrow stack gap-5">
+      <div>
+        ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:isBuy ? "Buy Orders" : "Sell Orders", to: isBuy ? "buy-orders" : "sell-orders"}, {label:order.id}])}
+        <div class="row justify-between align-start mt-2">
+          <div>
+            <div class="row gap-2">
+              <h1 class="page-title font-mono" style="margin-top:0;">${order.id}</h1>
+              ${badge(order.status, tone(order.status))}
+            </div>
+            <div class="t-md c-muted mt-1">${order.type} · ${order.customer} · Submitted ${order.submitted}</div>
+          </div>
+          <div class="row gap-2">
+            <button class="btn btn-secondary btn-sm"><i data-lucide="copy"></i>Copy ID</button>
+            <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>Download slip</button>
+            ${order.status === "Failed" ? '<button class="btn btn-primary btn-sm"><i data-lucide="refresh-cw"></i>Retry order</button>' : ""}
+          </div>
+        </div>
+      </div>
+      <div class="grid-4">
+        ${[
+          { k: "Amount", v: order.amount }, { k: "Units", v: order.units },
+          { k: "NAV Applied", v: "1.0423" }, { k: "Batch", v: isBuy ? "SCB-BUY-20260421" : "SCB-SELL-20260421" },
+        ].map(s => `
+          <div class="card card-pad-sm">
+            <div class="stat-label">${s.k}</div>
+            <div class="t-lg fw-700 c-ink font-mono mt-1">${s.v}</div>
+          </div>
+        `).join("")}
+      </div>
+      <div class="grid-3">
+        <div class="card card-pad-lg col-span-2">
+          <h3 class="t-md fw-700 c-ink mb-5">Lifecycle</h3>
+          <div class="timeline">${renderTimeline(timeline)}</div>
+        </div>
+        <div class="stack gap-4">
+          <div class="card card-pad">
+            <h3 class="t-md fw-700 c-ink mb-4">Order details</h3>
+            <div class="stack gap-3">
+              ${[
+                { k: "Customer", v: order.customer }, { k: "Fund", v: order.fund },
+                { k: "Type", v: order.type }, { k: "Submitted by", v: "Amina Mukasa" },
+                { k: "Reference", v: order.id, mono: true },
+              ].map(r => `
+                <div>
+                  <div class="t-xs c-muted">${r.k}</div>
+                  <div class="t-md fw-600 c-ink ${r.mono ? 'font-mono' : ''}">${r.v}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+          ${order.status === "Failed" ? `
+            <div class="card" style="padding:20px; background:var(--red-light); border-color:#FECACA;">
+              <div class="row gap-2 align-start">
+                <i data-lucide="alert-triangle" style="width:16px;height:16px;color:var(--red);margin-top:2px;"></i>
+                <div>
+                  <div class="t-md fw-700" style="color:#991B1B;">Order failed</div>
+                  <div class="t-xs mt-1" style="color:#991B1B;">Sanlam did not confirm receipt of funds by the 14:00 deadline. Funds are held in the collection account. Retry, or escalate to L4.</div>
+                </div>
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========== RECURRING SUBSCRIPTIONS ==========
+function renderRecurring() {
+  const active = RECURRING.filter(r => r.status === "Active").length;
+  const failed = RECURRING.filter(r => r.status === "Failed").length;
+  const paused = RECURRING.filter(r => r.status === "Paused").length;
+  // Monthly commitment (rough: weekly * 4 + monthly) — just for display
+  const monthlyCommit = "KES 2,455,000";
+
+  const recStatusTone = { Active: "green", Paused: "default", Failed: "red" };
+
+  return `
+    <div class="page stack gap-5">
+      <div class="page-header">
+        <div>
+          ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Recurring"}])}
+          <h1 class="page-title">Recurring Investments</h1>
+          <p class="page-desc">Scheduled auto-invest subscriptions across all SME clients. Runs against the daily buy batch.</p>
+        </div>
+        <button class="btn btn-primary" data-nav-link="buy-new"><i data-lucide="plus"></i>New Recurring</button>
+      </div>
+
+      <div class="grid-4">
+        ${[
+          { label: "Active Subscriptions", value: String(active), sub: "running on schedule" },
+          { label: "Monthly Commitment", value: monthlyCommit, sub: "gross auto-invest volume" },
+          { label: "Failed Last Cycle", value: String(failed), sub: "needs attention" },
+          { label: "Paused", value: String(paused), sub: "manually held" },
+        ].map(s => `
+          <div class="card card-pad-sm">
+            <div class="stat-label">${s.label}</div>
+            <div class="stat-value-sm">${s.value}</div>
+            <div class="stat-sub">${s.sub}</div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="card">
+        <div class="row gap-3" style="padding:16px; border-bottom:1px solid var(--border-soft);">
+          <div class="flex-1" style="position:relative;">
+            <i data-lucide="search" class="search-icon"></i>
+            <input class="search-input" placeholder="Search by customer or subscription ID…" />
+          </div>
+          <div class="select-wrap">
+            <select class="select"><option>All statuses</option><option>Active</option><option>Paused</option><option>Failed</option></select>
+            <i data-lucide="chevron-down" class="select-chevron"></i>
+          </div>
+          <div class="select-wrap">
+            <select class="select"><option>All frequencies</option><option>Monthly</option><option>Weekly</option></select>
+            <i data-lucide="chevron-down" class="select-chevron"></i>
+          </div>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>Export</button>
+        </div>
+        <table class="table">
+          <thead><tr><th>Subscription</th><th>Customer</th><th>Fund</th><th class="numeric">Amount</th><th>Frequency</th><th>Next Run</th><th>Last Status</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            ${RECURRING.map(r => `
+              <tr data-customer="${r.customerId}">
+                <td class="font-mono t-xs c-ink-soft">${r.id}</td>
+                <td class="c-ink fw-600">${r.customer}</td>
+                <td class="c-ink-soft">${r.fund}</td>
+                <td class="numeric fw-600 c-ink">${r.amount}</td>
+                <td class="c-ink-soft">${r.frequency}</td>
+                <td class="t-sm c-ink-soft">${r.nextRun}</td>
+                <td>
+                  <div class="t-sm ${r.lastStatus === 'Success' ? 'c-green-dark fw-600' : r.lastStatus === 'Insufficient funds' ? '' : 'c-ink-soft'}" ${r.lastStatus === 'Insufficient funds' ? 'style="color:var(--red);"' : ''}>${r.lastStatus}</div>
+                  <div class="t-xs c-muted">${r.lastRun} · ${r.runs} ${r.runs === 1 ? 'run' : 'runs'}</div>
+                </td>
+                <td>${badge(r.status, recStatusTone[r.status] || 'default')}</td>
+                <td class="numeric">
+                  <button class="icon-btn" title="More" onclick="event.stopPropagation();"><i data-lucide="more-horizontal"></i></button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+        <div class="row justify-between" style="padding:16px; border-top:1px solid var(--border-soft);">
+          <div class="t-xs c-muted">Showing ${RECURRING.length} of ${RECURRING.length} subscriptions</div>
+          <div class="row gap-1">
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevron-left"></i>Prev</button>
+            <button class="btn btn-ghost btn-sm">Next<i data-lucide="chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <h3 class="t-md fw-700 c-ink mb-3">How recurring works</h3>
+        <div class="grid-3">
+          ${[
+            { icon: "calendar", title: "Scheduler checks daily", desc: "Each business day the scheduler identifies which subscriptions are due based on their frequency." },
+            { icon: "credit-card", title: "Payment authorisation", desc: "The SC debit API is called with the customer's primary settlement account. Narration carries the subscription reference." },
+            { icon: "shopping-cart", title: "Joins buy batch", desc: "Once payment is confirmed before the 07:00 cut-off, the order joins the day's omnibus buy batch automatically." },
+          ].map(c => `
+            <div class="row gap-3 align-start">
+              <div style="width:36px;height:36px;border-radius:8px;background:var(--blue-light);color:var(--blue-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="${c.icon}" style="width:16px;height:16px;"></i></div>
+              <div>
+                <div class="t-md fw-600 c-ink">${c.title}</div>
+                <div class="t-xs c-muted mt-1">${c.desc}</div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========== RECONCILIATION ==========
+function renderRecon() {
+  const matchCell = (v) => v === true ? '<div class="recon-match-yes"><i data-lucide="check" style="width:14px;height:14px;stroke-width:3;"></i></div>' : v === false ? '<div class="recon-match-no"><i data-lucide="x" style="width:14px;height:14px;stroke-width:3;"></i></div>' : '<span class="c-muted">—</span>';
+  const deltaCell = (v) => {
+    if (!v || v === "—") return '<span class="c-muted">—</span>';
+    const isPos = v.startsWith("+") && v !== "+0.00";
+    const isNeg = v.startsWith("-") && v !== "-0.00";
+    return `<span class="font-mono ${isPos ? 'c-red' : isNeg ? 'c-red' : 'c-ink-soft'}">${v}</span>`;
+  };
+  const monthEndCell = (v) => {
+    if (v === "—") return '<span class="c-muted">—</span>';
+    if (v.startsWith("Available")) {
+      const amt = v.replace("Available · ", "");
+      return `<div><span class="badge badge-green"><i data-lucide="check" style="width:10px;height:10px;"></i>Available</span><div class="t-xs font-mono c-muted mt-1">${amt}</div></div>`;
+    }
+    return v;
+  };
+  const statusPill = (s) => s === "Reconciled" ? `<span class="badge badge-green"><i data-lucide="check" style="width:10px;height:10px;"></i>${s}</span>` : `<span class="badge badge-amber"><i data-lucide="alert-triangle" style="width:10px;height:10px;"></i>${s}</span>`;
+  const ratePill = (s) => s === "—" ? '<span class="c-muted">—</span>' : `<span class="badge badge-blue">${s}</span>`;
+
+  return `
+    <div class="page stack gap-5">
+      <div class="page-header">
+        <div class="row gap-3 align-start">
+          <div style="width:44px;height:44px;border-radius:10px;background:var(--blue-light);color:var(--blue-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:4px;"><i data-lucide="table" style="width:20px;height:20px;"></i></div>
+          <div>
+            ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:"Reconciliation"}])}
+            <h1 class="page-title-lg" style="font-size:24px;margin-top:2px;">MMSP Fund Recon</h1>
+            <p class="page-desc">Sanlam values vs SC values · EOD balance, gross &amp; net interest · Apr 2026</p>
+          </div>
+        </div>
+        <div class="row gap-2">
+          <button class="btn btn-secondary btn-sm"><i data-lucide="columns-3"></i>Columns</button>
+          <button class="btn btn-secondary btn-sm"><i data-lucide="download"></i>CSV</button>
+          <button class="btn btn-dark btn-sm"><i data-lucide="download"></i>Excel</button>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="row gap-3" style="flex-wrap:wrap;">
+          <label class="field">
+            <span class="field-label">Market Close Date From</span>
+            <div class="input-wrap" style="width:170px;"><input class="input" type="date" value="2026-03-21" /></div>
+          </label>
+          <label class="field">
+            <span class="field-label">To</span>
+            <div class="input-wrap" style="width:170px;"><input class="input" type="date" value="2026-04-21" /></div>
+          </label>
+          <label class="field">
+            <span class="field-label">Reconciliation Status</span>
+            <div class="select-wrap" style="width:180px;">
+              <select class="select"><option>All</option><option selected>Reconciled</option><option>Drift flagged</option><option>Failed</option></select>
+              <i data-lucide="chevron-down" class="select-chevron"></i>
+            </div>
+          </label>
+          <label class="field">
+            <span class="field-label">Rate Status</span>
+            <div class="select-wrap" style="width:180px;">
+              <select class="select"><option selected>All rate statuses</option><option>Published</option><option>Pending</option><option>Missing</option></select>
+              <i data-lucide="chevron-down" class="select-chevron"></i>
+            </div>
+          </label>
+          <div class="flex-1"></div>
+          <div class="row gap-2" style="align-items:flex-end;">
+            <button class="btn btn-dark">Apply Filters</button>
+            <button class="btn btn-secondary">Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="overflow:hidden;">
+        <div class="recon-scroll">
+          <table class="recon-table">
+            <thead>
+              <tr class="recon-groups">
+                <th class="recon-group-empty" colspan="2"></th>
+                <th class="recon-group" colspan="2">RATE</th>
+                <th class="recon-group" colspan="2">FLOW</th>
+                <th class="recon-group" colspan="5">EOD BALANCE</th>
+                <th class="recon-group" colspan="4">GROSS INTEREST</th>
+                <th class="recon-group" colspan="4">NET INTEREST</th>
+                <th class="recon-group" colspan="4">CUMULATIVE</th>
+                <th class="recon-group" colspan="3">SANLAM</th>
+              </tr>
+              <tr class="recon-head">
+                <th>Market Close Date</th>
+                <th>Status</th>
+                <th>Daily Rate</th>
+                <th>Rate Status</th>
+                <th class="numeric">Total Invested</th>
+                <th class="numeric">Total Redemption</th>
+                <th class="numeric">SC EOD</th>
+                <th class="numeric">Sanlam EOD</th>
+                <th class="numeric">Variance</th>
+                <th class="center">Match</th>
+                <th class="numeric">Tol %</th>
+                <th class="numeric">SC Gross</th>
+                <th class="numeric">Sanlam Gross</th>
+                <th class="numeric">Δ</th>
+                <th class="center">Match</th>
+                <th class="numeric">SC Net</th>
+                <th class="numeric">Sanlam Net</th>
+                <th class="numeric">Δ</th>
+                <th class="center">Match</th>
+                <th class="numeric">SC Cumulative</th>
+                <th class="numeric">Sanlam Cumulative</th>
+                <th class="numeric">Δ</th>
+                <th class="center">Match</th>
+                <th>Month-End Int</th>
+                <th>Sync</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${RECON.map(r => `
+                <tr>
+                  <td class="c-ink fw-600">${r.date}</td>
+                  <td>${statusPill(r.status)}</td>
+                  <td>${r.dailyRate === "—" ? '<span class="c-muted">—</span>' : `<span class="font-mono c-ink-soft">${r.dailyRate}</span>`}</td>
+                  <td>${ratePill(r.rateStatus)}</td>
+                  <td class="numeric font-mono c-ink-soft">${r.totalInvested}</td>
+                  <td class="numeric font-mono ${r.totalRedemption === "—" ? "c-muted" : "c-red"}">${r.totalRedemption}</td>
+                  <td class="numeric font-mono c-ink">${r.scEod}</td>
+                  <td class="numeric font-mono c-ink">${r.sanlamEod}</td>
+                  <td class="numeric font-mono ${r.variance !== "0.00" ? "c-red" : "c-ink-soft"}">${r.variance}</td>
+                  <td class="center">${matchCell(r.eodMatch)}</td>
+                  <td class="numeric font-mono c-muted">${r.tolPct}</td>
+                  <td class="numeric font-mono ${r.scGross === "—" ? "c-muted" : "c-ink"}">${r.scGross}</td>
+                  <td class="numeric font-mono ${r.sanlamGross === "—" ? "c-muted" : "c-ink"}">${r.sanlamGross}</td>
+                  <td class="numeric">${deltaCell(r.grossDelta)}</td>
+                  <td class="center">${matchCell(r.grossMatch)}</td>
+                  <td class="numeric font-mono ${r.scNet === "—" ? "c-muted" : "c-ink"}">${r.scNet}</td>
+                  <td class="numeric font-mono ${r.sanlamNet === "—" ? "c-muted" : "c-ink"}">${r.sanlamNet}</td>
+                  <td class="numeric">${deltaCell(r.netDelta)}</td>
+                  <td class="center">${matchCell(r.netMatch)}</td>
+                  <td class="numeric font-mono c-ink">${r.scCum}</td>
+                  <td class="numeric font-mono c-ink">${r.sanlamCum}</td>
+                  <td class="numeric">${deltaCell(r.cumDelta)}</td>
+                  <td class="center">${matchCell(r.cumMatch)}</td>
+                  <td>${monthEndCell(r.monthEndInt)}</td>
+                  <td><span class="recon-sync-pill"><span class="dot"></span>${r.sync}</span></td>
+                  <td><button class="btn btn-secondary btn-sm"><i data-lucide="refresh-cw"></i>Sync</button></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+        <div class="row justify-between" style="padding:16px 20px; border-top:1px solid var(--border-soft);">
+          <div class="row gap-3">
+            <span class="t-xs c-muted">Rows per page:</span>
+            <div class="select-wrap" style="width:72px;"><select class="select" style="padding:4px 24px 4px 10px; font-size:12px;"><option>10</option><option>25</option><option>50</option></select><i data-lucide="chevron-down" class="select-chevron"></i></div>
+            <span class="t-xs c-muted">1–10 of ${RECON.length}</span>
+          </div>
+          <div class="row gap-1">
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevrons-left"></i></button>
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevron-left"></i></button>
+            <span class="t-xs c-muted" style="padding:0 8px;">Page 1 of 1</span>
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevron-right"></i></button>
+            <button class="btn btn-ghost btn-sm"><i data-lucide="chevrons-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        ${[
+          { icon: "target", title: "EOD Portfolio Value", desc: "Exact match required between SC EOD and Sanlam EOD. No tolerance.", badge: "Strict" },
+          { icon: "percent", title: "Daily Accrued Interest", desc: "Difference within ±0.99 KES per day is reconciled automatically; delta is logged for audit.", badge: "±0.99 KES" },
+          { icon: "trending-up", title: "Cumulative Drift", desc: "Running monthly total tracked separately. Soft flag raised when aggregated drift becomes material.", badge: "Monitored" },
+        ].map(c => `
+          <div class="card card-pad">
+            <div class="row justify-between mb-3">
+              <div style="width:36px;height:36px;border-radius:8px;background:var(--blue-light);color:var(--blue-dark);display:flex;align-items:center;justify-content:center;"><i data-lucide="${c.icon}" style="width:16px;height:16px;"></i></div>
+              <span class="badge badge-blue">${c.badge}</span>
+            </div>
+            <div class="t-md fw-700 c-ink">${c.title}</div>
+            <div class="t-xs c-muted mt-1">${c.desc}</div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+// ========== PLACEHOLDER ==========
+function renderPlaceholder(title, icon, desc) {
+  return `
+    <div class="page">
+      ${crumbs([{label:"Dashboard", to:"dashboard"}, {label:title}])}
+      <h1 class="page-title">${title}</h1>
+      <p class="page-desc mb-5">${desc}</p>
+      <div class="card empty-state">
+        <div class="empty-icon"><i data-lucide="${icon}"></i></div>
+        <div class="t-md fw-700 c-ink">Module preview</div>
+        <div class="t-xs c-muted mt-1" style="max-width:380px;margin-left:auto;margin-right:auto;">This area is covered in the full PRD. The onboarding and buy/sell flows are fully interactive in this prototype.</div>
+        <div class="row gap-2 justify-center mt-5">
+          <button class="btn btn-secondary" data-nav-link="customers">Open customers</button>
+          <button class="btn btn-primary" data-nav-link="buy-new"><i data-lucide="shopping-cart"></i>New buy order</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ========== EVENT HANDLERS ==========
+function attachHandlers() {
+  // Sidebar
+  document.querySelectorAll("[data-nav]").forEach(el => el.onclick = () => navigate(el.dataset.nav));
+
+  // Nav links (buttons, rows, crumbs)
+  document.querySelectorAll("[data-nav-link]").forEach(el => el.addEventListener("click", (e) => {
+    e.preventDefault();
+    navigate(el.dataset.navLink);
+  }));
+
+  // Customer row clicks (list)
+  document.querySelectorAll("[data-customer]").forEach(el => el.onclick = () => navigate("customer-detail", { id: el.dataset.customer }));
+
+  // Order row clicks
+  document.querySelectorAll("[data-order]").forEach(el => el.onclick = () => navigate(el.dataset.orderType === "Buy" ? "buy-detail" : "sell-detail", { id: el.dataset.order }));
+
+  // Customer search
+  const custSearch = document.getElementById("cust-search");
+  if (custSearch) custSearch.oninput = (e) => {
+    const q = e.target.value.toLowerCase();
+    const filtered = CUSTOMERS.filter(c => [c.name, c.relId, c.id].join(" ").toLowerCase().includes(q));
+    document.getElementById("cust-tbody").innerHTML = renderCustomerRows(filtered);
+    lucide.createIcons();
+    filtered.forEach(() => {});
+    document.querySelectorAll("[data-customer]").forEach(el => el.onclick = () => navigate("customer-detail", { id: el.dataset.customer }));
+  };
+
+  // Customer wizard
+  const cwRelId = document.getElementById("cw-relid");
+  if (cwRelId) cwRelId.oninput = (e) => { app.cw.relId = e.target.value; };
+  const cwFetch = document.getElementById("cw-fetch");
+  if (cwFetch) cwFetch.onclick = () => {
+    app.cw.fetching = true;
+    render();
+    setTimeout(() => {
+      app.cw.fetching = false;
+      app.cw.fetched = {
+        relId: app.cw.relId || "SC90152208",
+        name: "Kenani Dairy Cooperative Ltd",
+        type: "SME — Cooperative",
+        registration: "RC-KE-2014-1188",
+        tin: "P051449211X",
+        email: "finance@kenanidairy.co.ke",
+        phone: "+254 772 445 019",
+        address: "Eldoret Industrial Park, Uasin Gishu",
+        director: "Grace N. Wanyama",
+        kycStatus: "Verified",
+        kycTier: "Tier 2",
+        bankAccounts: [
+          { no: "0100-6612-09-01", type: "Current Account", currency: "KES", balance: "5,288,000", primary: true },
+          { no: "0100-6612-09-02", type: "Call Account", currency: "KES", balance: "682,000", primary: false },
+          { no: "0100-6612-09-55", type: "USD Current", currency: "USD", balance: "42,100", primary: false },
+        ],
+      };
+      app.cw.step = 1;
+      render();
+    }, 1400);
+  };
+  document.querySelectorAll("[data-acct]").forEach(el => el.onclick = () => { app.cw.selectedAccount = Number(el.dataset.acct); render(); });
+  const cwBack = document.getElementById("cw-back");
+  if (cwBack) cwBack.onclick = () => { if (app.cw.step === 0) navigate("customers"); else { app.cw.step--; render(); } };
+  const cwNext = document.getElementById("cw-next");
+  if (cwNext) cwNext.onclick = () => { app.cw.step++; render(); };
+  const cwCreate = document.getElementById("cw-create");
+  if (cwCreate) cwCreate.onclick = () => {
+    app.cw.creating = true;
+    render();
+    setTimeout(() => { app.cw.creating = false; app.cw.created = true; render(); }, 1800);
+  };
+
+  // Buy wizard
+  document.querySelectorAll("[data-bw-customer]").forEach(el => el.onclick = () => { app.bw.customer = CUSTOMERS.find(c => c.id === el.dataset.bwCustomer); render(); });
+  document.querySelectorAll("[data-bw-fund]").forEach(el => el.onclick = () => { app.bw.fund = FUNDS.find(f => f.code === el.dataset.bwFund); render(); });
+  document.querySelectorAll("[data-bw-acct]").forEach(el => el.onclick = () => { app.bw.bankAcct = Number(el.dataset.bwAcct); render(); });
+  const bwAmount = document.getElementById("bw-amount");
+  if (bwAmount) { bwAmount.oninput = (e) => { app.bw.amount = e.target.value; }; bwAmount.onblur = () => render(); }
+  const bwToggle = document.getElementById("bw-recurring-toggle");
+  if (bwToggle) bwToggle.onclick = () => { app.bw.recurring = !app.bw.recurring; render(); };
+  const bwBack = document.getElementById("bw-back");
+  if (bwBack) bwBack.onclick = () => { if (app.bw.step === 0) navigate("buy-orders"); else { app.bw.step--; render(); } };
+  const bwNext = document.getElementById("bw-next");
+  if (bwNext) bwNext.onclick = () => { app.bw.step++; render(); };
+  const bwSubmit = document.getElementById("bw-submit");
+  if (bwSubmit) bwSubmit.onclick = () => {
+    app.bw.submitting = true;
+    render();
+    setTimeout(() => { app.bw.submitting = false; app.bw.submitted = true; app.bw.step = 3; render(); }, 1600);
+  };
+  const bwAnother = document.getElementById("bw-another");
+  if (bwAnother) bwAnother.onclick = () => { app.bw = { step: 0, customer: null, fund: null, amount: "", bankAcct: 0, recurring: false, submitting: false, submitted: false }; render(); };
+
+  // Sell wizard
+  document.querySelectorAll("[data-sw-customer]").forEach(el => el.onclick = () => { app.sw.customer = CUSTOMERS.find(c => c.id === el.dataset.swCustomer); render(); });
+  document.querySelectorAll("[data-sw-mode]").forEach(el => el.onclick = () => {
+    app.sw.mode = el.dataset.swMode;
+    if (app.sw.mode === "full") app.sw.amount = "18,420,500";
+    render();
+  });
+  const swAmount = document.getElementById("sw-amount");
+  if (swAmount) { swAmount.oninput = (e) => { app.sw.amount = e.target.value; }; swAmount.onblur = () => render(); }
+  const swBack = document.getElementById("sw-back");
+  if (swBack) swBack.onclick = () => { if (app.sw.step === 0) navigate("sell-orders"); else { app.sw.step--; render(); } };
+  const swNext = document.getElementById("sw-next");
+  if (swNext) swNext.onclick = () => { app.sw.step++; render(); };
+  const swSubmit = document.getElementById("sw-submit");
+  if (swSubmit) swSubmit.onclick = () => {
+    app.sw.submitting = true;
+    render();
+    setTimeout(() => { app.sw.submitting = false; app.sw.submitted = true; app.sw.step = 3; render(); }, 1600);
+  };
+  const swViewCust = document.getElementById("sw-view-cust");
+  if (swViewCust) swViewCust.onclick = () => navigate("customer-detail", { id: app.sw.customer?.id });
+}
+
+// ========== BOOT ==========
+document.addEventListener("DOMContentLoaded", () => {
+  lucide.createIcons();
+  render();
+});
+</script>
+</body>
+</html>
