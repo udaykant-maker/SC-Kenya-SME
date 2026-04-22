@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCB Wealth — Core Flow Diagrams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0473EA;
+  --blue-dark: #0259B8;
+  --blue-light: #E8F1FE;
+  --blue-lighter: #F4F8FE;
+  --green: #38D200;
+  --green-dark: #2AA800;
+  --green-light: #E8FBE0;
+  --ink: #0B1220;
+  --ink-soft: #364152;
+  --muted: #6B7684;
+  --border: #E4E8EE;
+  --border-soft: #EEF1F5;
+  --surface: #F7F8FA;
+  --amber: #F59E0B;
+  --amber-light: #FEF3C7;
+  --red: #DC2626;
+  --red-light: #FEE2E2;
+  --ink-pale: #F4F6F9;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+html, body {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: 'tnum'; }
+
+/* ---------- Page header ---------- */
+.page-wrap { max-width: 1280px; margin: 0 auto; padding: 48px 32px 64px; }
+.hero {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; left: 0; top: 0; height: 4px; width: 100%;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--green) 100%);
+}
+.hero-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--muted);
+  margin-bottom: 8px;
+}
+.hero-title {
+  font-size: 34px; font-weight: 800; color: var(--ink);
+  letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 8px;
+}
+.hero-title .grad {
+  background: linear-gradient(120deg, var(--blue), var(--green));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-sub { color: var(--muted); font-size: 15px; max-width: 720px; line-height: 1.55; }
+.hero-meta { display: flex; gap: 32px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-soft); }
+.hero-meta-item { }
+.hero-meta-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.hero-meta-val { font-size: 14px; font-weight: 600; color: var(--ink); margin-top: 4px; }
+
+/* ---------- Legend ---------- */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  padding: 16px 20px; background: #fff;
+  border: 1px solid var(--border); border-radius: 12px;
+  margin-bottom: 32px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.legend-line { width: 28px; height: 2px; flex-shrink: 0; }
+.legend-line.dashed { background: repeating-linear-gradient(90deg, var(--muted) 0 4px, transparent 4px 8px); height: 2px; }
+
+/* ---------- Flow sections ---------- */
+.flow-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
+  position: relative;
+}
+.flow-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 28px; gap: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-soft); }
+.flow-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--blue-dark); text-transform: uppercase;
+  background: var(--blue-light); padding: 4px 10px; border-radius: 999px;
+  margin-bottom: 8px;
+}
+.flow-title { font-size: 24px; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; line-height: 1.15; }
+.flow-desc { font-size: 13px; color: var(--muted); margin-top: 6px; max-width: 620px; line-height: 1.5; }
+.flow-kpi { display: flex; gap: 20px; flex-shrink: 0; }
+.kpi { text-align: right; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+.kpi-val { font-size: 15px; font-weight: 700; color: var(--ink); margin-top: 2px; }
+
+/* ---------- Swim lanes (Buy/Sell) ---------- */
+.swimlane {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  margin-top: 24px;
+  position: relative;
+}
+.lane {
+  display: contents;
+}
+.lane-label {
+  padding: 20px 16px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted);
+  border-right: 2px solid var(--border);
+  background: var(--ink-pale);
+  position: relative;
+  display: flex; align-items: center; gap: 8px;
+}
+.lane-label::after {
+  content: ''; position: absolute; top: 0; right: -2px; bottom: 0;
+  width: 2px; background: var(--blue);
+  opacity: 0;
+}
+.lane-row {
+  padding: 20px 20px 20px 28px;
+  position: relative;
+  border-bottom: 1px dashed var(--border);
+  min-height: 100px;
+  display: flex; align-items: center; gap: 14px;
+  overflow-x: auto;
+}
+.lane:last-child .lane-row, .lane:last-child .lane-label { border-bottom: none; }
+.lane-icon {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--blue-light);
+}
+.lane-scb .lane-icon { background: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.lane-vault .lane-icon { background: #7C3AED; box-shadow: 0 0 0 3px #EDE9FE; }
+.lane-sanlam .lane-icon { background: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.lane-customer .lane-icon { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-light); }
+
+/* ---------- Flow nodes (steps) ---------- */
+.node {
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  min-width: 180px;
+  max-width: 220px;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.2s;
+}
+.node:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(15,23,42,0.08); }
+.node-step {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.node-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; line-height: 1.25; }
+.node-desc { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+.node-api {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--ink-soft);
+  margin-top: 6px; padding: 3px 6px;
+  background: var(--surface); border-radius: 4px;
+  display: inline-block;
+}
+.node-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 999px;
+  margin-top: 6px; letter-spacing: 0.05em;
+}
+.node-tag.async { background: var(--amber-light); color: #92400E; }
+.node-tag.sync { background: var(--blue-light); color: var(--blue-dark); }
+.node-tag.decision { background: #F3E8FF; color: #6B21A8; }
+
+/* Node variants */
+.node.start {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+  min-width: 120px; max-width: 140px;
+}
+.node.start .node-step { color: rgba(255,255,255,0.6); }
+.node.start .node-title { color: #fff; }
+.node.end {
+  background: var(--green); color: #fff; border-color: var(--green);
+  min-width: 130px; max-width: 160px;
+}
+.node.end .node-step { color: rgba(255,255,255,0.7); }
+.node.end .node-title { color: #fff; }
+.node.end .node-desc { color: rgba(255,255,255,0.85); }
+.node.decision {
+  background: #fff;
+  border-color: #A855F7;
+  border-style: dashed;
+}
+.node.decision .node-title { color: #6B21A8; }
+.node.fail-path {
+  border-color: var(--red);
+  border-style: dashed;
+  background: #FFF5F5;
+}
+.node.fail-path .node-title { color: #991B1B; }
+.node.sanlam { border-left: 4px solid var(--green); }
+.node.scb { border-left: 4px solid var(--blue); }
+.node.vault { border-left: 4px solid #7C3AED; }
+.node.customer { border-left: 4px solid var(--amber); }
+
+/* ---------- Connectors ---------- */
+.connector {
+  flex-shrink: 0;
+  display: flex; align-items: center;
+  color: var(--muted);
+}
+.connector svg { display: block; }
+.connector-label {
+  font-size: 9px; color: var(--muted); font-weight: 600;
+  white-space: nowrap; margin: 0 4px;
+}
+
+/* ---------- Onboarding — horizontal step diagram ---------- */
+.horizontal-flow {
+  display: flex; align-items: stretch; gap: 0;
+  padding: 16px 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 8px;
+}
+.hflow-step {
+  display: flex; flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  padding: 0 8px;
+  flex-shrink: 0;
+  min-width: 180px;
+}
+.hflow-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; color: #fff;
+  background: linear-gradient(135deg, var(--blue), var(--green));
+  box-shadow: 0 2px 6px rgba(4,115,234,0.3);
+  flex-shrink: 0;
+  z-index: 2;
+  position: relative;
+}
+.hflow-body {
+  text-align: center;
+  max-width: 180px;
+}
+.hflow-title { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 4px; }
+.hflow-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.hflow-actor {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--blue-dark);
+  margin-top: 6px;
+}
+.hflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 20px);
+  width: calc(100% - 40px);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px);
+  z-index: 1;
+}
+
+/* ---------- Customer onboarding vertical detail ---------- */
+.onboarding-detail {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.detail-card {
+  padding: 20px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+}
+.detail-card-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.detail-card-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); }
+.detail-card ul { list-style: none; margin: 0; padding: 0; }
+.detail-card ul li {
+  font-size: 11px; color: var(--ink-soft);
+  padding: 4px 0 4px 12px;
+  position: relative;
+}
+.detail-card ul li::before {
+  content: '';
+  position: absolute; left: 0; top: 11px;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--blue);
+}
+
+/* ---------- Failure paths sidebar ---------- */
+.failures {
+  margin-top: 24px;
+  background: #FFFBF5;
+  border: 1px solid #FED7AA;
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.failures-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #78350F; margin-bottom: 10px; }
+.failures-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 24px; }
+.failures-list div { font-size: 11px; color: #78350F; padding-left: 16px; position: relative; line-height: 1.5; }
+.failures-list div::before {
+  content: '!';
+  position: absolute; left: 0; top: 1px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #F59E0B; color: #fff;
+  font-size: 8px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------- Print / export ---------- */
+.toolbar {
+  position: fixed; top: 20px; right: 20px;
+  display: flex; gap: 8px; z-index: 100;
+}
+.toolbar button {
+  font-family: inherit;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.15s;
+}
+.toolbar button:hover { background: var(--surface); }
+
+/* ---------- Document footer ---------- */
+.doc-footer {
+  text-align: center;
+  font-size: 11px; color: var(--muted);
+  padding: 24px 0 8px;
+  border-top: 1px solid var(--border-soft);
+  margin-top: 24px;
+}
+
+@media print {
+  body { background: #fff; font-size: 11px; }
+  .page-wrap { padding: 12px; max-width: none; }
+  .toolbar { display: none; }
+  .flow-section { page-break-inside: avoid; box-shadow: none; margin-bottom: 20px; }
+  .hero { margin-bottom: 16px; }
+  .flow-section { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="window.print()">Print / Save as PDF</button>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">FLOW DIAGRAMS · v0.1</div>
+    <h1 class="hero-title">SCB Wealth Admin Portal — <span class="grad">Core Flows</span></h1>
+    <p class="hero-sub">End-to-end process flows for the three foundational journeys: Customer Onboarding, Buy Order, and Sell (Redemption) Order. Each flow shows the sequence of actions across SCB, Vault22, Sanlam, and the customer.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Market</div>
+        <div class="hero-meta-val">Kenya · KES</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Model</div>
+        <div class="hero-meta-val">Individual customer (not omnibus)</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Fund</div>
+        <div class="hero-meta-val">Sanlam Shilingi Money Market</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Settlement</div>
+        <div class="hero-meta-val">T+0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--blue);"></span> SCB (Bank)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#7C3AED;"></span> Vault22 (Platform)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--green);"></span> Sanlam (Fund Manager)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--amber);"></span> Customer</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#A855F7; border-radius:2px;"></span> Decision / gate</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--red);"></span> Failure path</div>
+    <div class="legend-item" style="margin-left:auto;"><span class="legend-line" style="background:var(--ink-soft);"></span> Synchronous</div>
+    <div class="legend-item"><span class="legend-line dashed"></span> Asynchronous</div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FLOW 1: CUSTOMER ONBOARDING -->
+  <!-- ============================================ -->
+  <section class="flow-section">
+    <div class="flow-header">
+      <div>
+        <div class="flow-label">● Flow 01</div>
+        <h2 class="flow-title">Customer Onboarding</h2>
+        <p class="flow-desc">SME admin fetches customer from SCB core, enriches for Sanlam requirements, and creates the customer record in both Vault22 and Sanlam in a single transaction.</p>
+      </div>
+      <div class="flow-kpi">
+        <div class="kpi">
+          <div class="kpi-label">Primary Actor</div>
+          <div class="kpi-val">SCB Wealth Ops</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Typical Time</div>
+          <div class="kpi-val">2–4 minutes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horizontal step flow -->
+    <div class="horizontal-flow">
+      <div class="hflow-step">
+        <div class="hflow-num">1</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Enter RelId</div>
+          <div class="hflow-desc">Admin inputs the customer's SCB Relationship ID in the wizard.</div>
+          <div class="hflow-actor">Admin</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">2</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Fetch from CIF</div>
+          <div class="hflow-desc">System calls SCB CIF to retrieve entity, KYC, and contact details.</div>
+          <div class="hflow-actor">SCB Core</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">3</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Duplicate Check</div>
+          <div class="hflow-desc">If RelId already exists in Vault22, block and offer to open existing profile.</div>
+          <div class="hflow-actor">Vault22</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">4</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Enrich</div>
+          <div class="hflow-desc">Admin adds risk profile, source of funds, and expected investment band.</div>
+          <div class="hflow-actor">Admin</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">5</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Select Account</div>
+          <div class="hflow-desc">Choose primary CASA for buy debits and sell credits.</div>
+          <div class="hflow-actor">Admin</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">6</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Dual Create</div>
+          <div class="hflow-desc">Vault22 profile created, then Sanlam investor registered via API.</div>
+          <div class="hflow-actor">Vault22 + Sanlam</div>
+        </div>
+      </div>
+      <div class="hflow-step">
+        <div class="hflow-num">7</div>
+        <div class="hflow-body">
+          <div class="hflow-title">Ready to invest</div>
+          <div class="hflow-desc">Customer ID + Sanlam Investor ID returned. Can place first buy immediately.</div>
+          <div class="hflow-actor">Complete</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail cards -->
+    <div class="onboarding-detail">
+      <div class="detail-card">
+        <div class="detail-card-title"><span class="dot" style="background:var(--blue);"></span>Validation Rules</div>
+        <ul>
+          <li>RelId must exist in SCB CIF and return a 200 response.</li>
+          <li>KYC tier must be ≥ Tier 2 for investment eligibility.</li>
+          <li>At least one active CASA account required.</li>
+          <li>Enrichment fields mandatory before submission to Sanlam.</li>
+        </ul>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title"><span class="dot" style="background:#7C3AED;"></span>System Calls</div>
+        <ul>
+          <li><span class="font-mono">GET /scb/cif/{relId}</span></li>
+          <li><span class="font-mono">GET /scb/accounts?relId=</span></li>
+          <li><span class="font-mono">POST /v1/customers</span> (Vault22)</li>
+          <li><span class="font-mono">POST /sanlam/investors</span></li>
+        </ul>
+      </div>
+      <div class="detail-card">
+        <div class="detail-card-title"><span class="dot" style="background:var(--red);"></span>Failure Handling</div>
+        <ul>
+          <li>RelId not found → wizard blocks at step 2, clear error shown.</li>
+          <li>KYC below tier → surfaces required action to admin.</li>
+          <li>Sanlam API error → Vault22 record rolled back, retry offered.</li>
+          <li>Duplicate detected → admin redirected to existing profile.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FLOW 2: BUY ORDER (swimlane) -->
+  <!-- ============================================ -->
+  <section class="flow-section">
+    <div class="flow-header">
+      <div>
+        <div class="flow-label">● Flow 02</div>
+        <h2 class="flow-title">Buy Order</h2>
+        <p class="flow-desc">Customer CASA is debited automatically, order submitted to Sanlam at the 07:00 cut-off, units allocated at the day's NAV, and holding updated on confirmation.</p>
+      </div>
+      <div class="flow-kpi">
+        <div class="kpi">
+          <div class="kpi-label">Buy Cut-off</div>
+          <div class="kpi-val">07:00 EAT</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Sanlam Confirm</div>
+          <div class="kpi-val">By 14:00 EAT</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Settlement</div>
+          <div class="kpi-val">T+0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="swimlane">
+      <!-- Lane 1: Admin -->
+      <div class="lane lane-scb">
+        <div class="lane-label"><span class="lane-icon"></span>Admin / SCB</div>
+        <div class="lane-row">
+          <div class="node start">
+            <div class="node-step">START</div>
+            <div class="node-title">New Buy Order</div>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node scb">
+            <div class="node-step">Step 1</div>
+            <div class="node-title">Admin enters order</div>
+            <div class="node-desc">Customer, amount, debit account</div>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node scb">
+            <div class="node-step">Step 3</div>
+            <div class="node-title">Debit customer CASA</div>
+            <div class="node-desc">SCB Payment API — idempotent</div>
+            <div class="node-api">POST /scb/payments/debit</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 2: Vault22 -->
+      <div class="lane lane-vault">
+        <div class="lane-label"><span class="lane-icon"></span>Vault22</div>
+        <div class="lane-row">
+          <div style="width:120px;"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 2</div>
+            <div class="node-title">Validate &amp; queue</div>
+            <div class="node-desc">Checks balance, writes to today's batch</div>
+            <span class="node-tag sync">SYNC</span>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node decision">
+            <div class="node-step">Gate</div>
+            <div class="node-title">Debit confirmed before 07:00?</div>
+            <span class="node-tag decision">DECISION</span>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 4</div>
+            <div class="node-title">Submit to Sanlam</div>
+            <div class="node-desc">Individual customer buy at batch close</div>
+            <div class="node-api">POST /sanlam/purchase</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 3: Sanlam -->
+      <div class="lane lane-sanlam">
+        <div class="lane-label"><span class="lane-icon"></span>Sanlam</div>
+        <div class="lane-row">
+          <div style="width:440px;"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node sanlam">
+            <div class="node-step">Step 5</div>
+            <div class="node-title">Execute at NAV</div>
+            <div class="node-desc">Units calculated at day's closing NAV</div>
+            <span class="node-tag async">ASYNC</span>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node sanlam">
+            <div class="node-step">Step 6</div>
+            <div class="node-title">Confirm by 14:00</div>
+            <div class="node-desc">Returns units, NAV, tx reference</div>
+            <div class="node-api">Async callback</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 4: Vault22 finalisation -->
+      <div class="lane lane-vault">
+        <div class="lane-label"><span class="lane-icon"></span>Vault22</div>
+        <div class="lane-row">
+          <div style="width:calc(100% - 500px);"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 7</div>
+            <div class="node-title">Allocate units</div>
+            <div class="node-desc">Credit customer holding, update portfolio</div>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node end">
+            <div class="node-step">END</div>
+            <div class="node-title">✓ Settled</div>
+            <div class="node-desc">T+0 · customer notified</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failure handling -->
+    <div class="failures">
+      <div class="failures-title">⚠ Buy Order — Failure Paths</div>
+      <div class="failures-list">
+        <div><strong>Debit fails</strong> — Order cancelled at gate; recurring subscription queued for retry next business day.</div>
+        <div><strong>Payment confirmed after 07:00</strong> — Order rolls into next day's batch automatically.</div>
+        <div><strong>Sanlam API timeout at submit</strong> — Alert raised (L4 Sanlam Integration); Ops retries from order detail.</div>
+        <div><strong>Sanlam misses 14:00</strong> — Order marked Failed; funds held in collection; escalation to L4.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FLOW 3: SELL ORDER (swimlane) -->
+  <!-- ============================================ -->
+  <section class="flow-section">
+    <div class="flow-header">
+      <div>
+        <div class="flow-label">● Flow 03</div>
+        <h2 class="flow-title">Sell (Redemption) Order</h2>
+        <p class="flow-desc">Unlike the buy flow, proceeds are paid directly by Sanlam to the customer's SCB account — no manual funding step. Full redemptions flag the customer as FWIC-eligible for month-end interest pro-rata.</p>
+      </div>
+      <div class="flow-kpi">
+        <div class="kpi">
+          <div class="kpi-label">Sell Cut-off</div>
+          <div class="kpi-val">07:15 EAT</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Proceeds</div>
+          <div class="kpi-val">Direct to customer</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Settlement</div>
+          <div class="kpi-val">T+0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="swimlane">
+      <!-- Lane 1: Admin -->
+      <div class="lane lane-scb">
+        <div class="lane-label"><span class="lane-icon"></span>Admin / SCB</div>
+        <div class="lane-row">
+          <div class="node start">
+            <div class="node-step">START</div>
+            <div class="node-title">New Sell Order</div>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node scb">
+            <div class="node-step">Step 1</div>
+            <div class="node-title">Select customer &amp; holding</div>
+            <div class="node-desc">Choose full or partial redemption</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 2: Vault22 -->
+      <div class="lane lane-vault">
+        <div class="lane-label"><span class="lane-icon"></span>Vault22</div>
+        <div class="lane-row">
+          <div style="width:120px;"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 2</div>
+            <div class="node-title">Validate units</div>
+            <div class="node-desc">Confirm sufficient holding balance</div>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node decision">
+            <div class="node-step">Gate</div>
+            <div class="node-title">Full redemption?</div>
+            <div class="node-desc">If yes → flag FWIC-eligible</div>
+            <span class="node-tag decision">DECISION</span>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 3</div>
+            <div class="node-title">Submit to Sanlam</div>
+            <div class="node-desc">At 07:15 cut-off</div>
+            <div class="node-api">POST /sanlam/redemption</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 3: Sanlam -->
+      <div class="lane lane-sanlam">
+        <div class="lane-label"><span class="lane-icon"></span>Sanlam</div>
+        <div class="lane-row">
+          <div style="width:440px;"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node sanlam">
+            <div class="node-step">Step 4</div>
+            <div class="node-title">Redeem units</div>
+            <div class="node-desc">At day's NAV; confirm tx</div>
+            <span class="node-tag async">ASYNC</span>
+          </div>
+          <div class="connector">
+            <svg width="32" height="16" viewBox="0 0 32 16"><path d="M0 8 L26 8 M22 4 L26 8 L22 12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node sanlam">
+            <div class="node-step">Step 6</div>
+            <div class="node-title">Credit customer bank</div>
+            <div class="node-desc">Direct credit to SCB CASA · no manual step</div>
+            <span class="node-tag sync">DIRECT</span>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 4: Vault22 finalise -->
+      <div class="lane lane-vault">
+        <div class="lane-label"><span class="lane-icon"></span>Vault22</div>
+        <div class="lane-row">
+          <div style="width:440px;"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node vault">
+            <div class="node-step">Step 5</div>
+            <div class="node-title">Deduct units</div>
+            <div class="node-desc">Immediate on Sanlam confirm</div>
+          </div>
+          <div style="flex:1;"></div>
+        </div>
+      </div>
+
+      <!-- Lane 5: Customer -->
+      <div class="lane lane-customer">
+        <div class="lane-label"><span class="lane-icon"></span>Customer</div>
+        <div class="lane-row">
+          <div style="width:calc(100% - 360px);"></div>
+          <div class="connector">
+            <svg width="16" height="32" viewBox="0 0 16 32"><path d="M8 0 L8 26 M4 22 L8 26 L12 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <div class="node end">
+            <div class="node-step">END</div>
+            <div class="node-title">✓ Funds received</div>
+            <div class="node-desc">Proceeds in SCB CASA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failure handling -->
+    <div class="failures">
+      <div class="failures-title">⚠ Sell Order — Failure Paths</div>
+      <div class="failures-list">
+        <div><strong>Insufficient units</strong> — Order rejected at validation; clear error shown to admin.</div>
+        <div><strong>Sanlam API failure at submit</strong> — Alert raised; manual investigation by Ops; retry or escalate.</div>
+        <div><strong>Customer bank credit fails</strong> — Amount parked in suspense; surfaced on Credit Failure Report; Ops resolves.</div>
+        <div><strong>Amount mismatch on settlement</strong> — Three-party alert (SCB + Vault22 + Sanlam); distribution blocked until resolved.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    SCB Wealth Admin Portal · Flow Diagrams v0.1 · Confidential · Standard Chartered Bank Kenya · Prepared April 2026
+  </div>
+</div>
+
+</body>
+</html>
